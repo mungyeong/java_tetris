@@ -6,7 +6,6 @@ import java.awt.*;
 public class Board extends JPanel {
 
     private Main mi;
-
     private JButton btn_board = new JButton("메뉴");
 
     public Board(Main mi) {
@@ -16,11 +15,14 @@ public class Board extends JPanel {
         add(t);
         setBounds(0,0,600,800);
         btn_board.setBounds(550,0,50,50);
-        btn_board.addActionListener(e -> mi.change(2));
         add(btn_board);
         setLayout(null);
         setBackground(Color.BLACK);
         setVisible(true);
         getRootPane();
+    }
+
+    public JButton getBtn_board() {
+        return btn_board;
     }
 }

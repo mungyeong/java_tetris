@@ -28,7 +28,7 @@ public final class Colors {
             case 7:
                 return Z;
             default:
-                return null;
+                return Color.WHITE;
         }
     }
 }

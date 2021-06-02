@@ -1,4 +1,4 @@
 package com.github.gyeong.tetris.controller;
 
-public interface IActions {
+public interface IGamePlays {
 }

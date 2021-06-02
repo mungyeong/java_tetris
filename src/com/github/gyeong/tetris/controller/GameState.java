@@ -2,7 +2,7 @@ package com.github.gyeong.tetris.controller;
 
 public class GameState implements IGameState {
 
-    private int state = 0; // 0:메뉴 1:게임 시작 2:게임 중지 3:게임 오버
+    private static int state = 0; // 0:메뉴 1:게임 시작 2:게임 중지 3:게임 오버
 
     public int getState() {
         return state;
