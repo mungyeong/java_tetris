@@ -24,8 +24,6 @@ public class Tetris extends JPanel {
     @Override
     public void paint(Graphics g) {
         super.paint(g);
-        g.setColor(Color.PINK);
-        g.fillRect(0,0,40,40);
         g.setColor(Color.BLACK);
         for (int w = 0; w <= WIDHT; w+=WIDHT/BOARD_WIDTH) {
             g.drawLine(w,0,w,HEIGHT);

@@ -12,7 +12,7 @@ public class GameState implements IGameState {
         this.state = 0;
     }
 
-    public void setState_Menu() {
+    public void setState_menu() {
         this.state = 0;
     }
 

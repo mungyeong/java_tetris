@@ -6,7 +6,7 @@ public interface IGameState {
 
     public void init();
 
-    public void setState_Menu();
+    public void setState_menu();
 
     public void setState_GameStart();
 

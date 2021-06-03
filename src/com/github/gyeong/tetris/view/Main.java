@@ -1,6 +1,6 @@
 package com.github.gyeong.tetris.view;
 
-import com.github.gyeong.tetris.util.ButtonEvent;
+import com.github.gyeong.tetris.model.ButtonEvent;
 
 import javax.swing.*;
 

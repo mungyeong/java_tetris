@@ -1,4 +1,4 @@
-package com.github.gyeong.tetris.util;
+package com.github.gyeong.tetris.model;
 
 import com.github.gyeong.tetris.view.Main;
 
@@ -8,14 +8,15 @@ public class ButtonEvent {
 
     public ButtonEvent(Main mi) {
         this.mi = mi;
+        eventSet();
     }
 
     private void eventSet() {
         mi.getBtn_board().addActionListener(e -> click_event(0));
         mi.getBtn_score().addActionListener(e -> click_event(1));
         mi.getBtn_exit().addActionListener(e -> System.exit(0));
-        mi.getBd().getBtn_board().addActionListener(e -> click_event(2));
-        mi.getSb().getBtn_board().addActionListener(e -> click_event(2));
+        mi.getBd().getBtn_menu().addActionListener(e -> click_event(2));
+        mi.getSb().getBtn_menu().addActionListener(e -> click_event(2));
     }
 
     private void click_event(int index) {
@@ -44,7 +45,6 @@ public class ButtonEvent {
     }
 
     public void btn_add() {
-        eventSet();
         mi.getBtn_board().setBounds(150, 50, 300, 100);
         mi.getBtn_score().setBounds(150, 200, 300, 100);
         mi.getBtn_exit().setBounds(150, 350, 300, 100);
