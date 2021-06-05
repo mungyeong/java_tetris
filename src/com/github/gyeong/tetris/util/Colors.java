@@ -31,4 +31,8 @@ public final class Colors {
                 return Color.WHITE;
         }
     }
+
+    public static Color getRd(){
+        return getColor((int)(Math.random()*7)+1);
+    }
 }

@@ -1,20 +1,29 @@
 package com.github.gyeong.tetris.view;
 
-import com.github.gyeong.tetris.model.ButtonEvent;
+import com.github.gyeong.tetris.controller.Event;
 
 import javax.swing.*;
 
 public class Main extends JFrame {
 
-    private Board bd = new Board(this);
+    private static Main mi = new Main();
+
+    private GameBoard bd = new GameBoard(this);
     private Scoreboard sb = new Scoreboard(this);
-    private ButtonEvent be = new ButtonEvent(this);
     private JButton btn_board = new JButton("게임 시작");
     private JButton btn_score = new JButton("점수판");
     private JButton btn_exit = new JButton("게임 종료");
 
 
-    public Main() {
+
+    private Event be = new Event(this);
+
+    public static Main getInstance() {
+        return mi;
+    }
+
+
+    private Main() {
         be.btn_add();
         setTitle("자바 테트리스 게임");
         setSize(600, 850);
@@ -25,7 +34,7 @@ public class Main extends JFrame {
         setVisible(true);
     }
 
-    public Board getBd() {
+    public GameBoard getBd() {
         return bd;
     }
 
@@ -45,11 +54,7 @@ public class Main extends JFrame {
         return btn_exit;
     }
 
-    public ButtonEvent getBe() {
-        return be;
-    }
-
     public static void main(String[] args) {
-        Main mi = new Main();
+        Main mi = Main.getInstance();
     }
 }

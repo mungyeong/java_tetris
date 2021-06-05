@@ -1,12 +1,10 @@
-package com.github.gyeong.tetris.controller;
+package com.github.gyeong.tetris.model;
 
 public interface IGameState {
 
     public int getState();
 
     public void init();
-
-    public void setState_menu();
 
     public void setState_GameStart();
 

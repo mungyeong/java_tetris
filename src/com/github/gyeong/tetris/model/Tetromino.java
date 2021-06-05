@@ -1,8 +1,8 @@
 package com.github.gyeong.tetris.model;
 
-public abstract class Tetrominos {
+public abstract class Tetromino {
 
-    public Tetrominos() {
+    public Tetromino() {
 
     }
 
@@ -63,7 +63,7 @@ public abstract class Tetrominos {
 
     public int getType() { return type; }
 
-    public void clone(Tetrominos t) {
+    public void clone(Tetromino t) {
         this.x = t.x;
         this.y = t.y;
         this.r = t.r;

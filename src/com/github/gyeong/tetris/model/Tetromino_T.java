@@ -1,28 +1,28 @@
 package com.github.gyeong.tetris.model;
 
-public class Tetrominos_L extends Tetrominos {
+public class Tetromino_T extends Tetromino {
 
-    public Tetrominos_L() {
+    public Tetromino_T() {
         this.block = new int[][][]{
                 {
                         {1, 0, 0},
-                        {1, 0, 0},
                         {1, 1, 0},
+                        {1, 0, 0},
                 },
                 {
                         {1, 1, 1},
-                        {1, 0, 0},
+                        {0, 1, 0},
                         {0, 0, 0},
                 },
                 {
+                        {0, 1, 0},
                         {1, 1, 0},
                         {0, 1, 0},
-                        {0, 1, 0},
                 },
                 {
-                        {0, 0, 0},
-                        {0, 0, 1},
+                        {0, 1, 0},
                         {1, 1, 1},
+                        {0, 0, 0},
                 }
         };
         numOfBlockType = 4;
@@ -31,11 +31,10 @@ public class Tetrominos_L extends Tetrominos {
         r = 0;
         widht = 3;
         height = 3;
-        type = 3;
+        type = 6;
     }
 
     public int[][] getBlock() {
         return block[r];
     }
-
 }

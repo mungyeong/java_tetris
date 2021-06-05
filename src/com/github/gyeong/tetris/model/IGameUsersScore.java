@@ -1,4 +1,4 @@
-package com.github.gyeong.tetris.controller;
+package com.github.gyeong.tetris.model;
 
 public interface IGameUsersScore {
 

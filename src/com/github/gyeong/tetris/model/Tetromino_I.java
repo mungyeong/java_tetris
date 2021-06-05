@@ -1,8 +1,8 @@
 package com.github.gyeong.tetris.model;
 
-public class Tetrominos_I extends Tetrominos {
+public class Tetromino_I extends Tetromino {
 
-    public Tetrominos_I() {
+    public Tetromino_I() {
         this.block = new int[][][]{
                 {
                         {1, 0, 0, 0},
