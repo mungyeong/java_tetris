@@ -15,7 +15,6 @@ public class Main extends JFrame {
     private JButton btn_exit = new JButton("게임 종료");
 
 
-
     private Event be = new Event(this);
 
     public static Main getInstance() {
@@ -32,6 +31,7 @@ public class Main extends JFrame {
         setLocationRelativeTo(null);
         setResizable(false);
         setVisible(true);
+
     }
 
     public GameBoard getBd() {
@@ -57,4 +57,5 @@ public class Main extends JFrame {
     public static void main(String[] args) {
         Main mi = Main.getInstance();
     }
+
 }

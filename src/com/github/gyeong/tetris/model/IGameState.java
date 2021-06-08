@@ -6,9 +6,12 @@ public interface IGameState {
 
     public void init();
 
-    public void setState_GameStart();
+    public void setStart();
 
-    public void setState_GamePause();
+    public void setResume();
 
-    public void setState_GameOver();
+    public void setPause();
+
+    public void setOver();
+
 }

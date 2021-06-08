@@ -4,7 +4,8 @@ public interface IGameUsersScore {
 
     public void init();
 
-    public void setUserScore(int userScore);
+    public void setUserScore(int score);
 
     public int getUserScore();
+
 }
