@@ -7,14 +7,17 @@ import java.awt.*;
 
 public class Score extends JTextPane {
 
-    private GameBoard gameBoard;
+    private static Score score = new Score();
 
-    private Integer score;
+    public static Score getInstance() {
+        return score;
+    }
+
+    private Integer current_score;
 
     private Tetris t;
 
-    public Score(GameBoard gameBoard) {
-        this.gameBoard = gameBoard;
+    private Score() {
         setBounds(400, 300, 200, 200);
         setForeground(Color.WHITE);
         setBackground(Color.BLACK);
@@ -23,13 +26,12 @@ public class Score extends JTextPane {
     }
 
     public void init() {
-        t = gameBoard.getT();
-        this.score = 0;
-        setText(this.score.toString());
+        this.current_score = 0;
+        setText(this.current_score.toString());
     }
 
-    public void update() {
-        this.score = t.getGame_user_score().getUserScore();
-        setText(this.score.toString());
+    public void update(int score) {
+        this.current_score = score;
+        setText(this.current_score.toString());
     }
 }

@@ -13,7 +13,6 @@ public class PlayTime {
     }
 
     public void start() {
-        init();
         startTime = System.currentTimeMillis();
     }
 

@@ -5,13 +5,12 @@ import com.github.gyeong.tetris.controller.TetrominosFactory;
 
 public class GamePlays implements IGamePlays {
 
-    private IGameActions game_actions;
+    private IGameActions actions;
 
-    private IGameState game_state;
-    private IGameUsersScore game_user_score;
+    private IGameScore score;
 
-    private Tetromino tetrominoe_now;
-    private Tetromino tetrominoe_next;
+    private Tetromino now;
+    private Tetromino next;
 
     private int[][] board;
 
@@ -22,113 +21,123 @@ public class GamePlays implements IGamePlays {
     }
 
     @Override
-    public void onPressKey(int k) {
-        game_actions.onKeyEvent(k);
+    public void on_PressKey(int k) {
+        actions.on_KeyEvent(k);
     }
 
     @Override
     public void init() {
-        game_user_score = tetris.getGame_user_score();
+        score = tetris.getScore();
         board = tetris.getBoard();
-        game_state = tetris.getGame_state();
-        game_actions = tetris.getGame_actions();
-        tetrominoe_now = TetrominosFactory.create();
-        tetrominoe_next = TetrominosFactory.create();
-
+        actions = tetris.getAction();
+        nextSet();
     }
 
     @Override
     public void play() {
         this.init();
-        game_state.setResume();
     }
 
     @Override
-    public void pause() {
-        game_state.setPause();
-    }
-
-    @Override
-    public void moveLeft() {
-        tetrominoe_now.moveLeft();
-        if (!isAcceptable(tetrominoe_now)) {
-            tetrominoe_now.moveRight();
+    public void move_Left() {
+        now.move_Left();
+        if (!is_Acceptable(now)) {
+            now.move_Right();
         }
         tetris.update();
     }
 
     @Override
-    public void moveRight() {
-        tetrominoe_now.moveRight();
-        if (!isAcceptable(tetrominoe_now)) {
-            tetrominoe_now.moveLeft();
+    public void move_Right() {
+        now.move_Right();
+        if (!is_Acceptable(now)) {
+            now.move_Left();
         }
         tetris.update();
     }
 
     @Override
-    public void moveDown() {
-        tetrominoe_now.moveDown();
-        if (!isAcceptable(tetrominoe_now)) {
-            tetrominoe_now.moveUp();
-            moveStop();
+    public void move_Down() {
+        now.move_Down();
+        if (!is_Acceptable(now)) {
+            now.moveUp();
+            move_Stop();
         }
         tetris.update();
     }
 
     @Override
     public void rotate() {
-        tetrominoe_now.rotate();
-        if (!isAcceptable(tetrominoe_now)) {
-            tetrominoe_now.preRotate();
+        now.rotate();
+        if (!is_Acceptable(now)) {
+            now.preRotate();
         }
         tetris.update();
     }
 
     @Override
-    public void moveBottom() {
-        while (isAcceptable(tetrominoe_now)) {
-            tetrominoe_now.moveDown();
+    public void move_Bottom() {
+        while (is_Acceptable(now)) {
+            now.move_Down();
         }
-        tetrominoe_now.moveUp();
+        now.moveUp();
         tetris.update();
     }
 
     @Override
-    public void moveStop() {
-        if (tetrominoe_now.getY() == 0) {
+    public void move_Stop() {
+        if (now.getY() == 0) {
             tetris.stop();
         } else {
-            board_addblock();
-            next_tetrominoe();
+            board_add();
+            nextSet();
+            tetris.nextSet();
             tetris.update();
         }
     }
 
     @Override
-    public void next_tetrominoe() {
-        tetrominoe_now = tetrominoe_next;
-        tetrominoe_next = TetrominosFactory.create();
-        tetris.tetromino_next();
+    public void nextSet() {
+        set_Now();
+    }
+
+    public Tetromino get_Now() {
+        return now;
+    }
+
+    public Tetromino get_Next() {
+        return next;
+    }
+
+    public void set_Now() {
+        if (next == null) {
+            set_Next();
+        }
+        this.now = next;
+        set_Next();
+
+    }
+
+    public void set_Next() {
+        this.next = TetrominosFactory.create();
     }
 
     @Override
-    public void board_addblock() {
-        int t_widht = tetrominoe_now.getWidth(), t_height = tetrominoe_now.getHeight();
-        int t_x = tetrominoe_now.getX(), t_y = tetrominoe_now.getY();
+    public void board_add() {
+        int t_widht = now.getWidth(), t_height = now.getHeight();
+        int t_x = now.getX(), t_y = now.getY();
         for (int h = 0; h < t_height; h++) {
             for (int w = 0; w < t_widht; w++) {
-                if (tetrominoe_now.getBlock()[h][w] > 0) {
-                    board[t_y + h][t_x + w] = tetrominoe_now.getType();
+                if (now.getBlock()[h][w] > 0) {
+                    board[t_y + h][t_x + w] = now.getType();
                 }
             }
         }
-        removeing_Line();
-        tetris.update();
+        line_Delete();
     }
 
     @Override
-    public boolean isAcceptable(Tetromino tetromino) {
+    public boolean is_Acceptable(Tetromino tetromino) {
         int[][] block = tetromino.getBlock();
         int w = tetromino.getWidth();
         int h = tetromino.getHeight();
@@ -151,19 +160,17 @@ public class GamePlays implements IGamePlays {
     }
 
 
-    public void removeing_Line() {
-        int count, removedLIne = 0;
-
+    public void line_Delete() {
+        int count = 0, score = 0;
         for (int y = board.length - 1; y >= 0; y--) {
-            count = 0;
-            int x, m;
-            for (x = 0; x < 10; x++) {
+            int x = 0, m;
+            for (; x < 10; x++) {
                 if (board[y][x] != 0) {
                     count++;
                 }
             }
             if (count == board[y].length) {
-                removedLIne++;
+                score++;
                 for (x = 0; x < board[y].length; x++) {
                     for (m = y; m > 0; m--) {
                         board[m][x] = board[m - 1][x];
@@ -172,32 +179,14 @@ public class GamePlays implements IGamePlays {
                 }
                 y++;
             }
+            count = 0;
         }
-        game_user_score.setUserScore(removedLIne * (removedLIne > 3 ? 40 : 15));
-    }
-
-    public Tetromino getNow() {
-        return tetrominoe_now;
-    }
-
-    public Tetromino getTetrominoe_next() {
-        return tetrominoe_next;
-    }
-
-    public void setTetrominoe_now(Tetromino tetrominoe_now) {
-        this.tetrominoe_now = tetrominoe_now;
-    }
-
-    public void setTetrominoe_next(Tetromino tetrominoe_next) {
-        this.tetrominoe_next = tetrominoe_next;
-    }
-
-    public IGameState getGame_state() {
-        return game_state;
-    }
-
-    public void setGame_state(IGameState game_state) {
-        this.game_state = game_state;
+        if (score > 3) {
+            score *= 40;
+        } else {
+            score *= 15;
+        }
+        this.score.setScore(score);
     }
 }
 

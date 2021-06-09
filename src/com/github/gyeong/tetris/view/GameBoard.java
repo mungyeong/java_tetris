@@ -1,6 +1,7 @@
 package com.github.gyeong.tetris.view;
 
 
+import com.github.gyeong.tetris.controller.Event;
 import com.github.gyeong.tetris.controller.Tetris;
 
 import javax.swing.*;
@@ -8,53 +9,78 @@ import java.awt.*;
 
 public class GameBoard extends JPanel {
 
-    private Main mi;
-    private Tetris t;
-    private JButton btn_menu = new JButton("메뉴");
-    private JButton btn_game = new JButton("시작");
-    private JButton btn_stop = new JButton("재도전");
+    private static GameBoard gameBoard = new GameBoard();
+
+    public static GameBoard getInstance() {
+        return gameBoard;
+    }
+
+    private Main main = Main.getInstance();
+    private Tetris tetris;
+    private JButton btn[] = {
+            new JButton("메뉴"),
+            new JButton("시작"),
+            new JButton("재도전")
+    };
 
     private Score score;
 
 
-    public GameBoard(Main mi) {
-        this.mi = mi;
-        score = new Score(this);
-        t = new Tetris(400, 800, this);
-        score = new Score(this);
+    private GameBoard() {
+        score = Score.getInstance();
+        tetris = new Tetris(400, 800);
         add(score);
-        add(t);
+        add(tetris);
         setBounds(0, 0, 600, 800);
-        btn_menu.setBounds(550, 0, 50, 50);
-        btn_game.setBounds(450, 700, 50, 50);
-        btn_stop.setBounds(500, 700, 50, 50);
-        add(btn_menu);
-        add(btn_game);
-        add(btn_stop);
+        event_Set();
         setLayout(null);
         setBackground(Color.BLACK);
         setVisible(true);
         getRootPane();
     }
 
-    public Tetris getT() {
-        return t;
+    public void event_Set() {
+        for(int i=0;i<btn.length;i++){
+            int index = i;
+            btn[i].addActionListener(e -> {
+                event(index);
+            });
+            add(btn[i]).setBounds(450+(i*50), i!=0?700:0, 50, 50);
+
+        }
     }
 
-    public JButton getBtn_menu() {
-        return btn_menu;
+    public void event(int index) {
+        JButton btn_temp = btn[index];
+        if(index == 0) {
+            Event.change(2);
+        }
+        if (index == 1){
+            switch (tetris.getState().getState()) {
+                case 0:
+                case 3:
+                    tetris.start();
+                    break;
+                case 1:
+                    tetris.pause();
+                    break;
+                case 2:
+                    tetris.resume();
+                    break;
+            }
+            btn_temp.setText(btn_temp.getText() != "시작" ? "시작" : "중지");
+        }
+        if(index == 2 ) {
+            if (JOptionPane.showConfirmDialog(main, "재도전하시겠습니까?", "재도전",JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == 0) {
+                btn_temp.setText("시작");
+                tetris.stop();
+            }
+        }
+        tetris.requestFocus();
     }
 
-    public JButton getBtn_game() {
-        return btn_game;
-    }
-
-    public JButton getBtn_stop() {
-        return btn_stop;
-    }
-
-    public Score getScore() {
-        return score;
+    public void update_Score(int score) {
+        this.score.update(score);
     }
 
 }

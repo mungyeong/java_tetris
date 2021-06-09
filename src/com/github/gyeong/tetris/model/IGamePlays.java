@@ -2,42 +2,36 @@ package com.github.gyeong.tetris.model;
 
 public interface IGamePlays {
 
-    public void onPressKey(int k);
+    public void on_PressKey(int k);
 
     public void init();
 
-    public void moveLeft();
+    public void move_Left();
 
-    public void moveRight();
-
-    public void moveDown();
+    public void move_Right();
 
     public void rotate();
 
-    public void moveBottom();
+    public void move_Down();
 
-    public boolean isAcceptable(Tetromino tetromino);
+    public void move_Bottom();
+
+    public void move_Stop();
+
+    public boolean is_Acceptable(Tetromino tetromino);
 
     public void play();
 
-    public void pause();
+    public Tetromino get_Now();
 
-    public Tetromino getNow();
+    public Tetromino get_Next();
 
-    public Tetromino getTetrominoe_next();
+    public void set_Now();
 
-    public void setTetrominoe_now(Tetromino tetrominoe_now);
+    public void set_Next();
 
-    public void setTetrominoe_next(Tetromino tetrominoe_next);
+    public void nextSet();
 
-    public IGameState getGame_state();
-
-    public void setGame_state(IGameState game_state);
-
-    public void moveStop();
-
-    public void next_tetrominoe();
-
-    public void board_addblock();
+    public void board_add();
 
 }

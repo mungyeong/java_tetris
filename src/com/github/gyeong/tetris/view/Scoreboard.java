@@ -1,23 +1,28 @@
 package com.github.gyeong.tetris.view;
 
+import com.github.gyeong.tetris.controller.Event;
 import javax.swing.*;
 import java.awt.*;
 
 public class Scoreboard extends JPanel {
 
-    private Main mi;
+    private static Scoreboard scoreboard = new Scoreboard();
 
-    public JButton getBtn_menu() {
-        return btn_menu;
+    public static Scoreboard getInstance() {
+        return scoreboard;
     }
+
+    private Main main;
 
     private JButton btn_menu = new JButton("메뉴");
 
-    public Scoreboard(Main mi) {
-        this.mi = mi;
+    private Scoreboard() {
+        this.main = Main.getInstance();
         setBounds(0,0,600,800);
-        btn_menu.setBounds(550,0,50,50);
-        add(btn_menu);
+        add(btn_menu).setBounds(550,0,50,50);
+        btn_menu.addActionListener(e -> {
+            Event.change(2);
+        });
         setLayout(null);
         setBackground(Color.GRAY);
         setVisible(true);

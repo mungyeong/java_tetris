@@ -24,16 +24,16 @@ public abstract class Tetromino {
         r = (r-1+numOfBlockType) % numOfBlockType;
     }
 
-    public void moveLeft() {
+    public void move_Left() {
         x--;
     }
 
-    public void moveRight() {
+    public void move_Right() {
         x++;
     }
 
 
-    public void moveDown() {
+    public void move_Down() {
         y++;
     }
 
