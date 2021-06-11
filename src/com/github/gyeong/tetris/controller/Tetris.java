@@ -1,7 +1,11 @@
 package com.github.gyeong.tetris.controller;
 
 import com.github.gyeong.tetris.model.*;
-import com.github.gyeong.tetris.util.Colors;
+import com.github.gyeong.tetris.support.Colors;
+import com.github.gyeong.tetris.support.FileSteam;
+import com.github.gyeong.tetris.view.Board;
+import com.github.gyeong.tetris.view.Main;
+import com.github.gyeong.tetris.view.Scoreboard;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,7 +20,7 @@ public class Tetris extends JPanel implements ActionListener {
 
     private final int BOARD_WIDTH = 10;
     private final int BOARD_HEIGHT = 20;
-    private int widht, height, gameSpeed = 0;
+    private int widht, height, gameSpeed;
 
     private IGamePlays plays = new GamePlays(this);
 
@@ -26,7 +30,14 @@ public class Tetris extends JPanel implements ActionListener {
 
     private IGameScore score = new GameScore();
 
+    private IPlayTime playtime = new PlayTime();
+
+    private Main main = Main.getInstance();
+
     private Tetromino now;
+
+    private Tetromino next;
+
     Timer timer;
 
     private int board[][] = new int[BOARD_HEIGHT][BOARD_WIDTH];
@@ -36,51 +47,64 @@ public class Tetris extends JPanel implements ActionListener {
         this.height = height;
         setFocusable(true);
         setBounds(0, 0, widht, height);
-        init();
         addKeyListener(new TetrisKeyAdapter());
     }
 
     public void init() {
-        timer = new Timer(0, this);
-        actions.init();
-        plays.init();
-        state.init(this);
-        timer = new Timer(0, this);
-        now = null;
-        repaint();
         for (int i = 0; i < BOARD_HEIGHT; i++) {
             for (int j = 0; j < BOARD_WIDTH; j++) {
                 board[i][j] = 0;
             }
         }
+        gameSpeed = 700;
+        actions.init();
+        playtime.init();
+        state.init();
+        score.init();
+        timer = new Timer(gameSpeed, this);
+        plays.init();
+        now = null;
+        next = null;
+        repaint();
     }
 
     public void start() {
-        timer.start();
         plays.play();
+        playtime.start();
         state.setStart();
-        nextSet();
+        now = plays.get_Now();
+        next = plays.get_Next();
+        Board.getInstance().update();
+        timer.start();
         repaint();
     }
 
     public void stop() {
         timer.stop();
         state.setOver();
+        Board.getInstance().init();
         init();
     }
 
+    public void over() {
+        playtime.stop();
+        timer.stop();
+        state.setOver();
+        Save_request();
+        init();
+        Board.getInstance().init();
+    }
+
     public void resume() {
+        playtime.resume();
         timer.start();
         state.setResume();
     }
 
     public void pause() {
+        playtime.pause();
         timer.stop();
         state.setPause();
-    }
-
-    public void nextSet() {
-        now = plays.get_Now();
     }
 
     @Override
@@ -110,8 +134,11 @@ public class Tetris extends JPanel implements ActionListener {
             }
         }
         g.setColor(BLACK);
+        onBorder(g, board_widht, board_height);
+    }
 
-        for (int w = 0; w <= widht; w += board_widht) {
+    public void onBorder(Graphics g, int board_widht, int board_height) {
+        for (int w = 0; w <= widht; w += board_widht) {         //게임보드 선 출력
             g.drawLine(w, 0, w, height);
         }
         for (int h = 0; h <= height; h += board_height) {
@@ -120,7 +147,9 @@ public class Tetris extends JPanel implements ActionListener {
     }
 
     public void update() {
-        this.repaint();
+        repaint();
+        gameSpeed = 700 - (score.getIntScore() / 10);
+        timer.setDelay(gameSpeed);
     }
 
     class TetrisKeyAdapter extends KeyAdapter {
@@ -150,14 +179,47 @@ public class Tetris extends JPanel implements ActionListener {
         return plays;
     }
 
+    public Tetromino getNext() {
+        return next;
+    }
+
+    public void setNext(Tetromino next) {
+        this.next = next;
+    }
+
+    public void setNow(Tetromino now) {
+        this.now = now;
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
-        gameSpeed = 700 - (score.getIntScore() / 10);
-        repaint();
-        timer.setDelay(gameSpeed);
         if (state.getState() == 1) {
             plays.move_Down();
         }
     }
+
+    public void ScoreSave(String name) {
+        ScoreInfo scoreInfo = new ScoreInfo();
+        scoreInfo.setPlayer_name(name);
+        scoreInfo.setScore(score.getStringScore());
+
+        long ms = this.playtime.getTime();
+
+        System.out.println();
+        scoreInfo.setPlay_time("");
+        FileSteam stream = FileSteam.getInstance();
+        stream.saveScore(scoreInfo);
+        Scoreboard.getInstance().update();
+    }
+
+    public void Save_request() {
+        if (JOptionPane.showConfirmDialog(main, "점수를 저장하시겠습니까?", "저장", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE) == 0) {
+            String name = JOptionPane.showInputDialog(main, "저장할 이름을 입력해주세요.", "이름 입력창", JOptionPane.INFORMATION_MESSAGE);
+            if (name != null ) {
+                ScoreSave(name);
+            }
+        }
+    }
 }
+
 

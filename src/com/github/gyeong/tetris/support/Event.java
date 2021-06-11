@@ -1,4 +1,4 @@
-package com.github.gyeong.tetris.controller;
+package com.github.gyeong.tetris.support;
 
 import com.github.gyeong.tetris.view.Main;
 
@@ -24,7 +24,7 @@ public class Event {
     }
 
     public static void change_Main(int index) {
-        if (index==2) {
+        if (index == 2) {
             System.exit(0);
         }
         change(index);

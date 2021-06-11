@@ -2,6 +2,7 @@ package com.github.gyeong.tetris.model;
 
 import com.github.gyeong.tetris.controller.Tetris;
 import com.github.gyeong.tetris.controller.TetrominosFactory;
+import com.github.gyeong.tetris.view.Board;
 
 public class GamePlays implements IGamePlays {
 
@@ -30,7 +31,8 @@ public class GamePlays implements IGamePlays {
         score = tetris.getScore();
         board = tetris.getBoard();
         actions = tetris.getAction();
-        nextSet();
+        now = TetrominosFactory.create();
+        next = TetrominosFactory.create();
     }
 
     @Override
@@ -41,7 +43,7 @@ public class GamePlays implements IGamePlays {
     @Override
     public void move_Left() {
         now.move_Left();
-        if (!is_Acceptable(now)) {
+        if (!is_Acceptable()) {
             now.move_Right();
         }
         tetris.update();
@@ -50,18 +52,8 @@ public class GamePlays implements IGamePlays {
     @Override
     public void move_Right() {
         now.move_Right();
-        if (!is_Acceptable(now)) {
+        if (!is_Acceptable()) {
             now.move_Left();
-        }
-        tetris.update();
-    }
-
-    @Override
-    public void move_Down() {
-        now.move_Down();
-        if (!is_Acceptable(now)) {
-            now.moveUp();
-            move_Stop();
         }
         tetris.update();
     }
@@ -69,56 +61,67 @@ public class GamePlays implements IGamePlays {
     @Override
     public void rotate() {
         now.rotate();
-        if (!is_Acceptable(now)) {
+        if (!is_Acceptable()) {
             now.preRotate();
         }
         tetris.update();
     }
 
     @Override
-    public void move_Bottom() {
-        while (is_Acceptable(now)) {
-            now.move_Down();
-        }
-        now.moveUp();
-        tetris.update();
-    }
-
-    @Override
-    public void move_Stop() {
-        if (now.getY() == 0) {
-            tetris.stop();
+    public void move_Down() {
+        now.move_Down();
+        if (!is_Acceptable()) {
+            move_Stop();
         } else {
-            board_add();
-            nextSet();
-            tetris.nextSet();
             tetris.update();
         }
     }
 
     @Override
-    public void nextSet() {
-        set_Now();
+    public void move_Bottom() {
+        while (is_Acceptable()) {
+            now.move_Down();
+        }
+        move_Stop();
     }
 
+    @Override
+    public void move_Stop() {
+        now.moveUp();
+        if (now.getY() < 1) {
+            tetris.over();
+        } else {
+            board_add();
+            line_Delete();
+            setNow();
+            setNext();
+            tetris.update();
+            tetris.setNow(get_Now());
+            tetris.setNext(get_Next());
+            Board.getInstance().update();
+        }
+    }
+
+    @Override
     public Tetromino get_Now() {
         return now;
     }
 
+    @Override
     public Tetromino get_Next() {
         return next;
     }
 
-    public void set_Now() {
+    @Override
+    public void setNow() {
         if (next == null) {
-            set_Next();
+            this.setNext();
         }
         this.now = next;
-        set_Next();
-
     }
 
-    public void set_Next() {
+    @Override
+    public void setNext() {
         this.next = TetrominosFactory.create();
     }
 
@@ -128,21 +131,20 @@ public class GamePlays implements IGamePlays {
         int t_x = now.getX(), t_y = now.getY();
         for (int h = 0; h < t_height; h++) {
             for (int w = 0; w < t_widht; w++) {
-                if (now.getBlock()[h][w] > 0) {
+                if (now.getBlock()[h][w] > 0 && board[t_y + h][t_x + w] == 0) {
                     board[t_y + h][t_x + w] = now.getType();
                 }
             }
         }
-        line_Delete();
     }
 
     @Override
-    public boolean is_Acceptable(Tetromino tetromino) {
-        int[][] block = tetromino.getBlock();
-        int w = tetromino.getWidth();
-        int h = tetromino.getHeight();
-        int x = tetromino.getX();
-        int y = tetromino.getY();
+    public boolean is_Acceptable() {
+        int[][] block = now.getBlock();
+        int w = now.getWidth();
+        int h = now.getHeight();
+        int x = now.getX();
+        int y = now.getY();
 
         for (int i = 0; i < h; i++) {
             for (int j = 0; j < w; j++) {

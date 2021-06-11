@@ -1,4 +1,4 @@
-package com.github.gyeong.tetris.util;
+package com.github.gyeong.tetris.support;
 
 import java.awt.*;
 

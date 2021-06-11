@@ -1,6 +1,6 @@
 package com.github.gyeong.tetris.view;
 
-import com.github.gyeong.tetris.controller.Event;
+import com.github.gyeong.tetris.support.Event;
 
 import javax.swing.*;
 
@@ -12,7 +12,7 @@ public class Main extends JFrame {
         return main;
     }
 
-    private GameBoard bd = GameBoard.getInstance();
+    private Board bd = Board.getInstance();
 
     private Scoreboard sb = Scoreboard.getInstance();
 
@@ -42,7 +42,7 @@ public class Main extends JFrame {
         }
     }
 
-    public GameBoard getBd() {
+    public Board getBd() {
         return bd;
     }
 

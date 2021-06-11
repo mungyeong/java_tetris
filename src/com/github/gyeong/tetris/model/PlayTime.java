@@ -1,6 +1,6 @@
-package com.github.gyeong.tetris.util;
+package com.github.gyeong.tetris.model;
 
-public class PlayTime {
+public class PlayTime implements IPlayTime {
 
     private long startTime;
     private long endTime;
@@ -18,7 +18,7 @@ public class PlayTime {
 
     public void pause() {
         endTime = System.currentTimeMillis();
-        time += endTime - startTime;
+        time += (endTime - startTime);
     }
 
     public void resume() {
@@ -26,10 +26,12 @@ public class PlayTime {
     }
 
     public void stop() {
-        time += endTime - startTime;
+        endTime = System.currentTimeMillis();
+        time += (endTime - startTime);
     }
 
     public long getTime() {
         return time;
     }
+
 }

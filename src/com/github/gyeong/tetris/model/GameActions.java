@@ -13,7 +13,7 @@ public class GameActions implements IGameActions {
 
     private IGameState state = null;
 
-    private Tetris tetris = null;
+    private Tetris tetris;
 
     public void on_KeyEvent(int keycode) {
         if (this.play != null && this.state.getState() == 1) {

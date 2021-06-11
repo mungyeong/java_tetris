@@ -1,4 +1,4 @@
-package com.github.gyeong.tetris.util;
+package com.github.gyeong.tetris.support;
 
 import java.net.*;
 
@@ -9,17 +9,17 @@ public class NetWork {
 
 
     public void set_Server(){
+        port = (int)(Math.random() * 65535) + 49152 ;
         try{
             String local = InetAddress.getLocalHost().getHostAddress();
 
             System.out.println(local);
         }
         catch (Exception e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }finally {
             Server = null;
             Client = null;
-            port = (int)(Math.random() * 65535) + 49152 ;
         }
     }
 

@@ -18,20 +18,20 @@ public interface IGamePlays {
 
     public void move_Stop();
 
-    public boolean is_Acceptable(Tetromino tetromino);
-
-    public void play();
+    public boolean is_Acceptable();
 
     public Tetromino get_Now();
 
     public Tetromino get_Next();
 
-    public void set_Now();
+    public void setNow();
 
-    public void set_Next();
-
-    public void nextSet();
+    public void setNext();
 
     public void board_add();
+
+    public void line_Delete();
+
+    public void play();
 
 }

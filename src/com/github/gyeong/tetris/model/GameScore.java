@@ -1,18 +1,12 @@
 package com.github.gyeong.tetris.model;
 
-import com.github.gyeong.tetris.view.GameBoard;
 
 public class GameScore implements IGameScore {
 
-    private int Score = 0;
-
-    public GameScore() {
-        init();
-    }
+    private static int Score = 0;
 
     public void init() {
         this.Score = 0;
-        GameBoard.getInstance().update_Score(Score);
     }
 
     @Override
@@ -28,6 +22,5 @@ public class GameScore implements IGameScore {
     @Override
     public void setScore(int score) {
         this.Score += score;
-        GameBoard.getInstance().update_Score(Score);
     }
 }
