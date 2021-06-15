@@ -23,9 +23,9 @@ public class Preview extends JPanel {
     public void paint(Graphics g) {
         super.paint(g);
 
-        int width = getWidth() / 4;
-        int height = getHeight() / 6;
         if (next != null) {
+            int width = getWidth() / next.getWidth();
+            int height = getHeight() / next.getHeight();
             int t_widht = next.getWidth(), t_height = next.getHeight();
             int t_x = next.getX(), t_y = next.getY();
             for (int h = 0; h < t_height; h++) {
@@ -33,21 +33,21 @@ public class Preview extends JPanel {
                     if (next.getBlock()[h][w] > 0) {
                         Color temp = Colors.getColor(next.getType());
                         g.setColor(temp);
-                        g.fillRect((w+1) * width, (h+1) * height, width, height);
+                        g.fillRect((w) * width, (h) * height, width, height);
                     }
                 }
+            }
+            g.setColor(Color.WHITE);
+            for (int w = 0; w <= getWidth(); w += width) {         //게임보드 선 출력
+                g.drawLine(w, 0, w, getHeight());
+            }
+            for (int h = 0; h <= getHeight(); h += height) {
+                g.drawLine(0, h, getWidth(), h);
             }
         } else {
             g.clearRect(0,0,getWidth(),getHeight());
             g.setColor(Color.DARK_GRAY);
             g.fillRect(0,0,getWidth(),getHeight());
-        }
-        g.setColor(Color.WHITE);
-        for (int w = 0; w <= getWidth(); w += width) {         //게임보드 선 출력
-            g.drawLine(w, 0, w, getHeight());
-        }
-        for (int h = 0; h <= getHeight(); h += height) {
-            g.drawLine(0, h, getWidth(), h);
         }
     }
 

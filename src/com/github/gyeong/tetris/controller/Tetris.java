@@ -107,34 +107,31 @@ public class Tetris extends JPanel implements ActionListener {
         state.setPause();
     }
 
-    @Override
-    public void paint(Graphics g) {
-        super.paint(g);
-        int board_widht = widht / BOARD_WIDTH;
-        int board_height = height / BOARD_HEIGHT;
+    public void update() {
+        repaint();
+        gameSpeed = 700 - (score.getIntScore() / 10);
+        timer.setDelay(gameSpeed);
+    }
 
-        for (int h = 0; h < BOARD_HEIGHT; h++) {
-            for (int w = 0; w < BOARD_WIDTH; w++) {
-                Color temp = Colors.getColor(board[h][w]);
-                g.setColor(temp);
-                g.fillRect(w * board_widht, h * board_height, (w + 1) * board_widht, (h + 1) * board_height);
+    public void ScoreSave(String name) {
+        ScoreInfo scoreInfo = new ScoreInfo();
+        scoreInfo.setPlayer_name(name);
+        scoreInfo.setScore(score.getStringScore());
+
+        long ms = this.playtime.getTime();
+        scoreInfo.setPlay_time(String.valueOf(ms));
+        FileSteam stream = FileSteam.getInstance();
+        stream.saveScore(scoreInfo);
+        Scoreboard.getInstance().update();
+    }
+
+    public void Save_request() {
+        if (JOptionPane.showConfirmDialog(main, "점수를 저장하시겠습니까?", "저장", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE) == 0) {
+            String name = JOptionPane.showInputDialog(main, "저장할 이름을 입력해주세요.", "이름 입력창", JOptionPane.INFORMATION_MESSAGE);
+            if (name != null) {
+                ScoreSave(name);
             }
         }
-        if (now != null && this.state.getState() == 1) {
-            int t_widht = now.getWidth(), t_height = now.getHeight();
-            int t_x = now.getX(), t_y = now.getY();
-            for (int h = 0; h < t_height; h++) {
-                for (int w = 0; w < t_widht; w++) {
-                    if (now.getBlock()[h][w] > 0) {
-                        Color temp = Colors.getColor(now.getType());
-                        g.setColor(temp);
-                        g.fillRect((t_x + w) * board_widht, (t_y + h) * board_height, board_widht, board_height);
-                    }
-                }
-            }
-        }
-        g.setColor(BLACK);
-        onBorder(g, board_widht, board_height);
     }
 
     public void onBorder(Graphics g, int board_widht, int board_height) {
@@ -146,17 +143,37 @@ public class Tetris extends JPanel implements ActionListener {
         }
     }
 
-    public void update() {
-        repaint();
-        gameSpeed = 700 - (score.getIntScore() / 10);
-        timer.setDelay(gameSpeed);
+    public void onNow(Graphics g, int board_widht, int board_height) {
+        int t_widht = now.getWidth(), t_height = now.getHeight();
+        int t_x = now.getX(), t_y = now.getY();
+        for (int h = 0; h < t_height; h++) {
+            for (int w = 0; w < t_widht; w++) {
+                if (now.getBlock()[h][w] > 0) {
+                    Color temp = Colors.getColor(now.getType());
+                    g.setColor(temp);
+                    g.fillRect((t_x + w) * board_widht, (t_y + h) * board_height, board_widht, board_height);
+                }
+            }
+        }
+    }
+
+    public void onBlock(Graphics g, int board_widht, int board_height) {
+        for (int h = 0; h < BOARD_HEIGHT; h++) {
+            for (int w = 0; w < BOARD_WIDTH; w++) {
+                Color temp = Colors.getColor(board[h][w]);
+                g.setColor(temp);
+                g.fillRect(w * board_widht, h * board_height, (w + 1) * board_widht, (h + 1) * board_height);
+            }
+        }
     }
 
     class TetrisKeyAdapter extends KeyAdapter {
+
         public void keyPressed(KeyEvent e) {
             int keycode = e.getKeyCode();
-            plays.on_PressKey(keycode);
+            plays.PressKey(keycode);
         }
+
     }
 
     public int[][] getBoard() {
@@ -192,32 +209,24 @@ public class Tetris extends JPanel implements ActionListener {
     }
 
     @Override
+    public void paint(Graphics g) {
+        super.paint(g);
+        int board_widht = widht / BOARD_WIDTH;
+        int board_height = height / BOARD_HEIGHT;
+
+        onBlock(g, board_widht, board_height);
+
+        if (now != null && this.state.getState() == 1) {
+            onNow(g, board_widht, board_height);
+        }
+        g.setColor(BLACK);
+        onBorder(g, board_widht, board_height);
+    }
+
+    @Override
     public void actionPerformed(ActionEvent e) {
         if (state.getState() == 1) {
             plays.move_Down();
-        }
-    }
-
-    public void ScoreSave(String name) {
-        ScoreInfo scoreInfo = new ScoreInfo();
-        scoreInfo.setPlayer_name(name);
-        scoreInfo.setScore(score.getStringScore());
-
-        long ms = this.playtime.getTime();
-
-        System.out.println();
-        scoreInfo.setPlay_time("");
-        FileSteam stream = FileSteam.getInstance();
-        stream.saveScore(scoreInfo);
-        Scoreboard.getInstance().update();
-    }
-
-    public void Save_request() {
-        if (JOptionPane.showConfirmDialog(main, "점수를 저장하시겠습니까?", "저장", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE) == 0) {
-            String name = JOptionPane.showInputDialog(main, "저장할 이름을 입력해주세요.", "이름 입력창", JOptionPane.INFORMATION_MESSAGE);
-            if (name != null ) {
-                ScoreSave(name);
-            }
         }
     }
 }

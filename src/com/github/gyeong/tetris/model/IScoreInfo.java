@@ -19,9 +19,5 @@ public interface IScoreInfo {
 
     public void setScore(String score);
 
-    public void setRank(String rank);
-
-    public String getRank();
-
-    public String[] getString() ;
+    public String[] getString(int rank) ;
 }

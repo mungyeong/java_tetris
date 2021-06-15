@@ -35,7 +35,7 @@ public class Scoreboard extends JPanel {
             Event.change(2);
         });
         setLayout(null);
-        setBackground(Color.LIGHT_GRAY);
+        setBackground(Color.GRAY);
         setVisible(true);
     }
 

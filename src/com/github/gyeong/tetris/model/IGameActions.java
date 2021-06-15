@@ -2,7 +2,7 @@ package com.github.gyeong.tetris.model;
 
 public interface IGameActions {
 
-    public void on_KeyEvent(int k);
+    public void KeyEvent(int k);
 
     public void setPlay(IGamePlays play);
 

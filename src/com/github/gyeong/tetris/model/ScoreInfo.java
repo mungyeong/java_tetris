@@ -9,7 +9,6 @@ public class ScoreInfo implements IScoreInfo {
     private String play_time;
     private String play_day;
     private String score;
-    private String rank;
 
     public void setPlayer_name(String player_name) {
         this.player_name = player_name;
@@ -27,20 +26,12 @@ public class ScoreInfo implements IScoreInfo {
         this.score = score;
     }
 
-    public void setRank(String rank) {
-        this.rank = rank;
-    }
-
-    public String getRank() {
-        return rank;
-    }
-
     public String getScore() {
         return score;
     }
 
     public int getScoreint() {
-        return Integer.getInteger(score);
+        return Integer.valueOf(score);
     }
 
     public String getPlay_day() {
@@ -65,7 +56,24 @@ public class ScoreInfo implements IScoreInfo {
         this.score = null;
     }
 
-    public String[] getString() {
-        return new String[]{String.valueOf(Integer.valueOf(getRank()) + 1), getPlay_day(), getPlayer_name(), getScore(), getPlay_time()};
+    public String[] getString(int rank) {
+        long play_time = Long.valueOf(getPlay_time()) / 1000;
+        int[] unit = new int[]{60, 60};
+        String s = new String();
+        for (int i = 0; play_time > 0; i++) {
+            if (play_time > 0) {
+                break;
+            } else if (s.isEmpty()) {
+                long hour = play_time % unit[i];
+                s += hour > 9 ? hour : ("0" + hour);
+                play_time /= unit[i];
+            } else {
+                long hour = play_time % unit[i];
+                s += hour > 9 ? hour : ("0" + hour);
+                play_time /= unit[i];
+            }
+        }
+        System.out.println(s);
+        return new String[]{String.valueOf(rank + 1), getPlayer_name(), getScore(), getPlay_day(), s};
     }
 }

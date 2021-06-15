@@ -22,8 +22,8 @@ public class GamePlays implements IGamePlays {
     }
 
     @Override
-    public void on_PressKey(int k) {
-        actions.on_KeyEvent(k);
+    public void PressKey(int k) {
+        actions.KeyEvent(k);
     }
 
     @Override
@@ -161,7 +161,7 @@ public class GamePlays implements IGamePlays {
         return true;
     }
 
-
+    @Override
     public void line_Delete() {
         int count = 0, score = 0;
         for (int y = board.length - 1; y >= 0; y--) {

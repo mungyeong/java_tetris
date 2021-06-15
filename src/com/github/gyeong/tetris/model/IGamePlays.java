@@ -2,7 +2,7 @@ package com.github.gyeong.tetris.model;
 
 public interface IGamePlays {
 
-    public void on_PressKey(int k);
+    public void PressKey(int k);
 
     public void init();
 

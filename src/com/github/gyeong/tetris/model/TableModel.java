@@ -8,20 +8,23 @@ import java.util.Map;
 public class TableModel extends DefaultTableModel {
 
     public TableModel() {
-        this.setDataVector();
+        Map<Integer, ScoreInfo> List = FileSteam.getInstance().getList();
+        String[][] data = new String[List.size()][List.keySet().size()];
+        for (int i : List.keySet()) {
+            data[i] = List.get(i).getString(i);
+        }
+        for (String[] s : data) {
+            for (String c : s) {
+                System.out.println(c);
+            }
+            System.out.println();
+        }
+        String[] header = new String[]{"rank", "name", "score", "day", "play_time"};
+        super.setDataVector(data, header);
     }
 
     @Override
     public boolean isCellEditable(int rowIndex, int mColIndex) {
         return false;
-    }
-    public void setDataVector() {
-        Map<Integer, ScoreInfo> List = FileSteam.getInstance().getList();
-        String[][] data = new String[List.size()][List.keySet().size()];
-        for(int i: List.keySet()){
-            data[Integer.valueOf(List.get(i).getRank())] = List.get(i).getString();
-        }
-        String[] header = new String[]{"rank", "play_time", "name", "score", "day"};
-        super.setDataVector(data, header);
     }
 }

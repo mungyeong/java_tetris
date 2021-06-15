@@ -15,7 +15,7 @@ public class GameActions implements IGameActions {
 
     private Tetris tetris;
 
-    public void on_KeyEvent(int keycode) {
+    public void KeyEvent(int keycode) {
         if (this.play != null && this.state.getState() == 1) {
             switch (keycode) {
                 case KeyEvent.VK_LEFT:

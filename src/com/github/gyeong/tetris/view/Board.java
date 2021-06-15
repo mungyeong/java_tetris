@@ -90,6 +90,7 @@ public class Board extends JPanel {
             if (JOptionPane.showConfirmDialog(main, "재도전하시겠습니까?","재도전", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == 0) {
                 tetris.stop();
                 Btn_init();
+                preview.init();
             }
         }
         tetris.requestFocus();

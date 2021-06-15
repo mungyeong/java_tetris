@@ -7,7 +7,9 @@ import com.google.gson.reflect.TypeToken;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class FileSteam {
 
@@ -32,12 +34,6 @@ public class FileSteam {
         }
         return fileSteam;
     }
-
-    public Map<Integer, ScoreInfo> getList() {
-        return List;
-    }
-
-
     private FileSteam() {
         try {
             if (!folder.exists()) {
@@ -113,30 +109,34 @@ public class FileSteam {
 
 
     public void saveScore(ScoreInfo info) {
-        List.put(List.size(), info);
-        if (List.size() > 0) {
-            rankSort(info);
-        }
+        rankSort(info);
         writeFile();
-
+        List = getInstance().readFile();
     }
 
-    public void rankSort(ScoreInfo info) {
-        Map<Integer, ScoreInfo> List = this.getList();
-        List<Map.Entry<Integer, ScoreInfo>> sort = new LinkedList<>(List.entrySet());
-        Collections.sort(sort, (o1, o2) -> o2.getValue().getScore().compareTo((o1.getValue().getScore())));
-        LinkedHashMap<Integer, ScoreInfo> result = new LinkedHashMap<>();
-        for (int i = 0; i < sort.size()&&i<10; i++) {
-            Map.Entry<Integer, ScoreInfo> entry = sort.get(i);
-            entry.getValue().setRank(String.valueOf(i));
-            result.put(entry.getKey(), entry.getValue());
+    public static void rankSort(ScoreInfo info) {
+        int i = 0;
+        for (; i < List.size(); i++) {
+            ScoreInfo b = List.get(i);
+            int score = b.getScoreint();
+            if (info.getScoreint() >= score) {
+                for (int j = List.size() - 1; j >= i; j--) {
+                    ScoreInfo s = List.get(j);
+                    List.put(j + 1, s);
+                }
+                break;
+            }
         }
-        this.List = result;
+        List.put(i, info);
     }
 
     public void remove(int i) {
         List.remove(i);
         writeFile();
         return;
+    }
+
+    public Map<Integer, ScoreInfo> getList() {
+        return List;
     }
 }
