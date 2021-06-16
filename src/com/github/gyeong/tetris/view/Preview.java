@@ -1,8 +1,8 @@
 package com.github.gyeong.tetris.view;
 
 import com.github.gyeong.tetris.controller.Tetris;
-import com.github.gyeong.tetris.model.Tetromino;
-import com.github.gyeong.tetris.support.Colors;
+import com.github.gyeong.tetris.model.data.Tetromino;
+import com.github.gyeong.tetris.view.support.Colors;
 
 import javax.swing.*;
 import java.awt.*;

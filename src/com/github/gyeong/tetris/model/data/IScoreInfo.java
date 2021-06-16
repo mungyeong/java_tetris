@@ -1,4 +1,4 @@
-package com.github.gyeong.tetris.model;
+package com.github.gyeong.tetris.model.data;
 
 public interface IScoreInfo {
     public String getPlayer_name();

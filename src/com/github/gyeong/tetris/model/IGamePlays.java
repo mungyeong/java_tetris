@@ -1,5 +1,7 @@
 package com.github.gyeong.tetris.model;
 
+import com.github.gyeong.tetris.model.data.Tetromino;
+
 public interface IGamePlays {
 
     public void PressKey(int k);

@@ -2,6 +2,7 @@ package com.github.gyeong.tetris.model;
 
 import com.github.gyeong.tetris.controller.Tetris;
 import com.github.gyeong.tetris.controller.TetrominosFactory;
+import com.github.gyeong.tetris.model.data.Tetromino;
 import com.github.gyeong.tetris.view.Board;
 
 public class GamePlays implements IGamePlays {

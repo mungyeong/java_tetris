@@ -1,4 +1,4 @@
-package com.github.gyeong.tetris.model;
+package com.github.gyeong.tetris.model.data;
 
 public class Tetromino_O extends Tetromino {
 

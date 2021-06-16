@@ -1,11 +1,13 @@
 package com.github.gyeong.tetris.controller;
 
 import com.github.gyeong.tetris.model.*;
-import com.github.gyeong.tetris.support.Colors;
-import com.github.gyeong.tetris.support.FileSteam;
+import com.github.gyeong.tetris.model.data.ScoreInfo;
+import com.github.gyeong.tetris.model.data.Tetromino;
+import com.github.gyeong.tetris.view.support.Colors;
+import com.github.gyeong.tetris.view.support.FileSteam;
 import com.github.gyeong.tetris.view.Board;
 import com.github.gyeong.tetris.view.Main;
-import com.github.gyeong.tetris.view.Scoreboard;
+import com.github.gyeong.tetris.view.ScoreBoard;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,6 +23,8 @@ public class Tetris extends JPanel implements ActionListener {
     private final int BOARD_WIDTH = 10;
     private final int BOARD_HEIGHT = 20;
     private int widht, height, gameSpeed;
+
+    private int multiPlay = 0; // 0:싱글 1:서버 2:클라이언트
 
     private IGamePlays plays = new GamePlays(this);
 
@@ -122,7 +126,7 @@ public class Tetris extends JPanel implements ActionListener {
         scoreInfo.setPlay_time(String.valueOf(ms));
         FileSteam stream = FileSteam.getInstance();
         stream.saveScore(scoreInfo);
-        Scoreboard.getInstance().update();
+        ScoreBoard.getInstance().update();
     }
 
     public void Save_request() {

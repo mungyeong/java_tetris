@@ -1,4 +1,4 @@
-package com.github.gyeong.tetris.model;
+package com.github.gyeong.tetris.model.data;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -61,19 +61,16 @@ public class ScoreInfo implements IScoreInfo {
         int[] unit = new int[]{60, 60};
         String s = new String();
         for (int i = 0; play_time > 0; i++) {
-            if (play_time > 0) {
-                break;
-            } else if (s.isEmpty()) {
+             if (s.isEmpty()) {
                 long hour = play_time % unit[i];
                 s += hour > 9 ? hour : ("0" + hour);
                 play_time /= unit[i];
             } else {
                 long hour = play_time % unit[i];
-                s += hour > 9 ? hour : ("0" + hour);
+                s = (hour > 9 ? hour : ("0" + hour))+":"+s;
                 play_time /= unit[i];
             }
         }
-        System.out.println(s);
         return new String[]{String.valueOf(rank + 1), getPlayer_name(), getScore(), getPlay_day(), s};
     }
 }

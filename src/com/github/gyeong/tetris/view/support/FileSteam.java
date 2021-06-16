@@ -1,12 +1,14 @@
-package com.github.gyeong.tetris.support;
+package com.github.gyeong.tetris.view.support;
 
-import com.github.gyeong.tetris.model.ScoreInfo;
+import com.github.gyeong.tetris.model.data.ScoreInfo;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.*;
+import java.nio.Buffer;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -34,6 +36,7 @@ public class FileSteam {
         }
         return fileSteam;
     }
+
     private FileSteam() {
         try {
             if (!folder.exists()) {
@@ -64,15 +67,30 @@ public class FileSteam {
                     e.printStackTrace();
                 }
             }
-            if (read != null) {
-                try {
-                    read.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+        }
+    }
+
+    public void writeFile(String fileName, String contents) {
+        try {
+            File newfile = new File(this.folder + fileName);
+            if (!newfile.exists()) {
+                newfile.createNewFile();
+            }
+            fileOutputStream = new FileOutputStream(newfile, true);
+            write = new BufferedOutputStream(fileOutputStream);
+            write.write(contents.getBytes(StandardCharsets.UTF_8));
+            write.flush();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                write.close();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
+
 
     public Map<Integer, ScoreInfo> readFile() {
         String contents = null;
@@ -114,7 +132,7 @@ public class FileSteam {
         List = getInstance().readFile();
     }
 
-    public static void rankSort(ScoreInfo info) {
+    public void rankSort(ScoreInfo info) {
         int i = 0;
         for (; i < List.size(); i++) {
             ScoreInfo b = List.get(i);
@@ -130,10 +148,22 @@ public class FileSteam {
         List.put(i, info);
     }
 
+    public void rankSort(int index) {
+        int lastNumber = Collections.max(List.keySet());
+        do {
+            ScoreInfo info = List.get(index + 1);
+            List.put(index, info);
+            index ++;
+        } while (index < lastNumber);
+        List.remove(lastNumber);
+    }
+
     public void remove(int i) {
         List.remove(i);
+        if(List.size()>0){
+            rankSort(i);
+        }
         writeFile();
-        return;
     }
 
     public Map<Integer, ScoreInfo> getList() {

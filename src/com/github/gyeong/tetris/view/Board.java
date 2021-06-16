@@ -1,9 +1,9 @@
 package com.github.gyeong.tetris.view;
 
 
-import com.github.gyeong.tetris.support.Event;
+import com.github.gyeong.tetris.view.support.Event;
 import com.github.gyeong.tetris.controller.Tetris;
-import com.github.gyeong.tetris.support.Score;
+import com.github.gyeong.tetris.view.support.Score;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,7 +23,8 @@ public class Board extends JPanel {
     private JButton btn[] = {
             new JButton("메뉴"),
             new JButton("시작"),
-            new JButton("재도전")
+            new JButton("재도전"),
+            new JButton("멀티플레이")
     };
 
     public static Board getInstance() {
@@ -69,6 +70,8 @@ public class Board extends JPanel {
     public void event(int index) {
         if (index == 0) {
             tetris.init();
+            Btn_init();
+            preview.init();
             Event.change(2);
         }
         if (index == 1) {
@@ -88,6 +91,13 @@ public class Board extends JPanel {
         }
         if (index == 2) {
             if (JOptionPane.showConfirmDialog(main, "재도전하시겠습니까?","재도전", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == 0) {
+                tetris.stop();
+                Btn_init();
+                preview.init();
+            }
+        }
+        if(index == 3 ){
+            if (JOptionPane.showConfirmDialog(main, "?","멀티플레이", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == 0) {
                 tetris.stop();
                 Btn_init();
                 preview.init();
