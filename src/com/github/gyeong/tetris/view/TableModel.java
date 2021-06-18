@@ -1,7 +1,7 @@
-package com.github.gyeong.tetris.model;
+package com.github.gyeong.tetris.view;
 
-import com.github.gyeong.tetris.model.data.ScoreInfo;
-import com.github.gyeong.tetris.view.support.FileSteam;
+import com.github.gyeong.tetris.model.ScoreInfo;
+import com.github.gyeong.tetris.controller.support.FileSteam;
 
 import javax.swing.table.DefaultTableModel;
 import java.util.Map;

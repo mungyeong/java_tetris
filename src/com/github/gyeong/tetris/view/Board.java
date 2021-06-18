@@ -1,9 +1,9 @@
 package com.github.gyeong.tetris.view;
 
 
-import com.github.gyeong.tetris.view.support.Event;
 import com.github.gyeong.tetris.controller.Tetris;
-import com.github.gyeong.tetris.view.support.Score;
+import com.github.gyeong.tetris.controller.support.Event;
+import com.github.gyeong.tetris.controller.support.Score;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,6 +26,8 @@ public class Board extends JPanel {
             new JButton("재도전"),
             new JButton("멀티플레이")
     };
+
+    private JTextPane serverInfo = new JTextPane();
 
     public static Board getInstance() {
         if (board == null) {
@@ -52,24 +54,35 @@ public class Board extends JPanel {
 
     public void event_Set() {
         for (int i = 0; i < btn.length; i++) {
-            int index = i,x,y,w=50,h=50;
+            int index = i, x = 0, y = 0, w = 0, h = 50;
             btn[i].addActionListener(e -> {
                 event(index);
             });
-            if(i == 0){
+            if (i == 0) {
                 x = 550;
                 y = 0;
-            } else {
-                x = 450 + (50 * i);
+                w = 50;
+            } else if (i == 1) {
+                x = 450;
+                y = 600;
+                w = 100;
+            } else if (i == 2) {
+                x = 550;
                 y = 700;
+                w = 50;
+            } else if (index == 3) {
+                x = 450;
+                y = 700;
+                w = 100;
             }
-            add(btn[i]).setBounds(x,y,w, h);
+
+            add(btn[i]).setBounds(x, y, w, h);
         }
     }
 
     public void event(int index) {
         if (index == 0) {
-            tetris.init();
+            tetris.stop();
             Btn_init();
             preview.init();
             Event.change(2);
@@ -90,18 +103,37 @@ public class Board extends JPanel {
             btn[1].setText(btn[1].getText() != "시작" ? "시작" : "중지");
         }
         if (index == 2) {
-            if (JOptionPane.showConfirmDialog(main, "재도전하시겠습니까?","재도전", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == 0) {
+            if (JOptionPane.showConfirmDialog(main, "재도전하시겠습니까?", "재도전",
+                    JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == 0) {
                 tetris.stop();
                 Btn_init();
                 preview.init();
             }
         }
-        if(index == 3 ){
-            if (JOptionPane.showConfirmDialog(main, "?","멀티플레이", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == 0) {
-                tetris.stop();
-                Btn_init();
-                preview.init();
+        if (index == 3) {
+            tetris.pause();
+            Object[] options = {"Client","Server"};
+            int type = JOptionPane.showOptionDialog(main, "서버 or 클라이언트?", "멀티플레이 선택",
+                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, 1);
+            System.out.println(type);
+            if (type == 0) {
+                tetris.setType(type);
+                JDialog info = new JDialog(main,"서버 접속 정보 입력");
+//                info.setp
+                JTextField ip = new JTextField();
+                JTextField port = new JTextField();
+                info.add(ip);
+                info.add(port);
+                info.setVisible(true);
+
+
+
+            }if (type == 1) {
+                tetris.setType(type);
             }
+            tetris.stop();
+            Btn_init();
+            preview.init();
         }
         tetris.requestFocus();
     }
@@ -120,6 +152,10 @@ public class Board extends JPanel {
 
     public void Btn_init() {
         btn[1].setText("시작");
+    }
+
+    public void Btn_init(int type) {
+        btn[1].setText("준비");
     }
 
 }

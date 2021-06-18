@@ -1,12 +1,11 @@
-package com.github.gyeong.tetris.view.support;
+package com.github.gyeong.tetris.controller.support;
 
-import com.github.gyeong.tetris.model.data.ScoreInfo;
+import com.github.gyeong.tetris.model.ScoreInfo;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.*;
-import java.nio.Buffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
@@ -30,6 +29,9 @@ public class FileSteam {
 
     private File fileName = new File(folder + "/Scoreboard.json");
 
+    private String line = System.getProperty("line.separator");
+
+
     public static FileSteam getInstance() {
         if (fileSteam == null) {
             fileSteam = new FileSteam();
@@ -50,11 +52,11 @@ public class FileSteam {
         }
     }
 
-    public void writeFile() {
+    public synchronized void writeFile() {
         try {
             fileOutputStream = new FileOutputStream(fileName);
             write = new BufferedOutputStream(fileOutputStream);
-            String contents = gson.toJson(List);
+            String contents = gson.toJson(List).replace("\n", line);
             write.write(contents.getBytes(StandardCharsets.UTF_8));
         } catch (Exception e) {
             e.printStackTrace();
@@ -70,7 +72,7 @@ public class FileSteam {
         }
     }
 
-    public void writeFile(String fileName, String contents) {
+    public synchronized void writeFile(String fileName, String contents) {
         try {
             File newfile = new File(this.folder + fileName);
             if (!newfile.exists()) {
@@ -78,7 +80,7 @@ public class FileSteam {
             }
             fileOutputStream = new FileOutputStream(newfile, true);
             write = new BufferedOutputStream(fileOutputStream);
-            write.write(contents.getBytes(StandardCharsets.UTF_8));
+            write.write(contents.replace("\n", line).getBytes(StandardCharsets.UTF_8));
             write.flush();
         } catch (Exception e) {
             e.printStackTrace();
@@ -92,7 +94,7 @@ public class FileSteam {
     }
 
 
-    public Map<Integer, ScoreInfo> readFile() {
+    public synchronized Map<Integer, ScoreInfo> readFile() {
         String contents = null;
         try {
             fileInputStream = new FileInputStream(fileName);
@@ -104,7 +106,7 @@ public class FileSteam {
                 while ((i = read.read(b)) != -1) {
                     buffer.append(new String(b, 0, i));
                 }
-                contents = new String(b, StandardCharsets.UTF_8);
+                contents = buffer.toString();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -126,13 +128,13 @@ public class FileSteam {
     }
 
 
-    public void saveScore(ScoreInfo info) {
+    public synchronized void saveScore(ScoreInfo info) {
         rankSort(info);
         writeFile();
         List = getInstance().readFile();
     }
 
-    public void rankSort(ScoreInfo info) {
+    public synchronized void rankSort(ScoreInfo info) {
         int i = 0;
         for (; i < List.size(); i++) {
             ScoreInfo b = List.get(i);
@@ -148,7 +150,7 @@ public class FileSteam {
         List.put(i, info);
     }
 
-    public void rankSort(int index) {
+    public synchronized void rankSort(int index) {
         int lastNumber = Collections.max(List.keySet());
         do {
             ScoreInfo info = List.get(index + 1);
@@ -158,7 +160,7 @@ public class FileSteam {
         List.remove(lastNumber);
     }
 
-    public void remove(int i) {
+    public synchronized void remove(int i) {
         List.remove(i);
         if(List.size()>0){
             rankSort(i);
@@ -166,7 +168,7 @@ public class FileSteam {
         writeFile();
     }
 
-    public Map<Integer, ScoreInfo> getList() {
+    public synchronized Map<Integer, ScoreInfo> getList() {
         return List;
     }
 }

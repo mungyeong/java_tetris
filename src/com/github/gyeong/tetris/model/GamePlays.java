@@ -2,8 +2,6 @@ package com.github.gyeong.tetris.model;
 
 import com.github.gyeong.tetris.controller.Tetris;
 import com.github.gyeong.tetris.controller.TetrominosFactory;
-import com.github.gyeong.tetris.model.data.Tetromino;
-import com.github.gyeong.tetris.view.Board;
 
 public class GamePlays implements IGamePlays {
 
@@ -28,17 +26,17 @@ public class GamePlays implements IGamePlays {
     }
 
     @Override
+    public void play() {
+        this.init();
+    }
+
+    @Override
     public void init() {
         score = tetris.getScore();
         board = tetris.getBoard();
         actions = tetris.getAction();
         now = TetrominosFactory.create();
         next = TetrominosFactory.create();
-    }
-
-    @Override
-    public void play() {
-        this.init();
     }
 
     @Override
@@ -96,10 +94,9 @@ public class GamePlays implements IGamePlays {
             line_Delete();
             setNow();
             setNext();
+            tetris.setNow(now);
+            tetris.setNext(next);
             tetris.update();
-            tetris.setNow(get_Now());
-            tetris.setNext(get_Next());
-            Board.getInstance().update();
         }
     }
 
@@ -190,6 +187,20 @@ public class GamePlays implements IGamePlays {
             score *= 15;
         }
         this.score.setScore(score);
+    }
+
+    @Override
+    public void line_Create() {
+        for (int y = 1; y < board.length - 1; y++) {
+            for (int x = 0; x < board[y].length - 1; x++) {
+                if (board[y][x] != 0) {
+                    board[y - 1][x - 1] = board[y][x];
+                }
+            }
+        }
+        for (int x = 0; x < board[19].length - 1; x++) {
+            board[19][x] = 8;
+        }
     }
 }
 

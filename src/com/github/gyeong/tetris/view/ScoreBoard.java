@@ -1,7 +1,7 @@
 package com.github.gyeong.tetris.view;
 
-import com.github.gyeong.tetris.view.support.Event;
-import com.github.gyeong.tetris.view.support.FileSteam;
+import com.github.gyeong.tetris.controller.support.Event;
+import com.github.gyeong.tetris.controller.support.FileSteam;
 
 import javax.swing.*;
 import java.awt.*;
@@ -50,7 +50,7 @@ public class ScoreBoard extends JPanel {
         table.reFresh();
     }
 
-    public void removeScore(int[] indexs) {
+    public synchronized void removeScore(int[] indexs) {
         FileSteam fileSteam = FileSteam.getInstance();
         for (int index: indexs){
             fileSteam.remove(index);

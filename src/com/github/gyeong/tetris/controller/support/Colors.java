@@ -1,4 +1,4 @@
-package com.github.gyeong.tetris.view.support;
+package com.github.gyeong.tetris.controller.support;
 
 import java.awt.*;
 
@@ -10,6 +10,7 @@ public final class Colors {
     private static final Color S = Color.green;                        // S 도형(4)
     private static final Color T = new Color(102,0,153);      // T 도형(5)
     private static final Color Z = Color.RED;                          // Z 도형(6)
+    private static final Color attack = Color.DARK_GRAY;                          // Z 도형(6)
 
     public static Color getColor(int num) {
         switch (num){
@@ -27,6 +28,8 @@ public final class Colors {
                 return T;
             case 7:
                 return Z;
+            case 8:
+                return attack;
             default:
                 return Color.WHITE;
         }

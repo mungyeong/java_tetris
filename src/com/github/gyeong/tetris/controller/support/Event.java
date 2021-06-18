@@ -1,4 +1,4 @@
-package com.github.gyeong.tetris.view.support;
+package com.github.gyeong.tetris.controller.support;
 
 import com.github.gyeong.tetris.view.Main;
 

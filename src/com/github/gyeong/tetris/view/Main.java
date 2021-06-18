@@ -1,6 +1,6 @@
 package com.github.gyeong.tetris.view;
 
-import com.github.gyeong.tetris.view.support.Event;
+import com.github.gyeong.tetris.controller.support.Event;
 
 import javax.swing.*;
 
@@ -21,7 +21,6 @@ public class Main extends JFrame {
             new JButton("점수판"),
             new JButton("게임 종료")
     };
-
 
     private Main() {
         setTitle("자바 테트리스 게임");

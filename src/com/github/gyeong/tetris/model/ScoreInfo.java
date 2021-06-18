@@ -1,4 +1,4 @@
-package com.github.gyeong.tetris.model.data;
+package com.github.gyeong.tetris.model;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

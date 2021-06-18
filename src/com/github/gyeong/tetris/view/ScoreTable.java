@@ -1,8 +1,6 @@
 package com.github.gyeong.tetris.view;
 
 
-import com.github.gyeong.tetris.model.TableModel;
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;

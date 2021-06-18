@@ -1,6 +1,6 @@
 package com.github.gyeong.tetris.controller;
 
-import com.github.gyeong.tetris.model.data.*;
+import com.github.gyeong.tetris.model.*;
 
 public class TetrominosFactory {
 

@@ -1,10 +1,11 @@
 package com.github.gyeong.tetris.controller;
 
+import com.github.gyeong.tetris.controller.support.Colors;
+import com.github.gyeong.tetris.controller.support.FileSteam;
 import com.github.gyeong.tetris.model.*;
-import com.github.gyeong.tetris.model.data.ScoreInfo;
-import com.github.gyeong.tetris.model.data.Tetromino;
-import com.github.gyeong.tetris.view.support.Colors;
-import com.github.gyeong.tetris.view.support.FileSteam;
+import com.github.gyeong.tetris.model.network.NetWorkLog;
+import com.github.gyeong.tetris.model.network.SocketClient;
+import com.github.gyeong.tetris.model.network.SocketServer;
 import com.github.gyeong.tetris.view.Board;
 import com.github.gyeong.tetris.view.Main;
 import com.github.gyeong.tetris.view.ScoreBoard;
@@ -15,6 +16,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 
 import static java.awt.Color.BLACK;
 
@@ -24,7 +26,7 @@ public class Tetris extends JPanel implements ActionListener {
     private final int BOARD_HEIGHT = 20;
     private int widht, height, gameSpeed;
 
-    private int multiPlay = 0; // 0:싱글 1:서버 2:클라이언트
+    private int type = 2; // 0:클라이언트 1:서버 2:싱글플레이
 
     private IGamePlays plays = new GamePlays(this);
 
@@ -37,6 +39,10 @@ public class Tetris extends JPanel implements ActionListener {
     private IPlayTime playtime = new PlayTime();
 
     private Main main = Main.getInstance();
+
+    private Thread netWork;
+
+    private NetWorkLog netWorkLog;
 
     private Tetromino now;
 
@@ -69,6 +75,7 @@ public class Tetris extends JPanel implements ActionListener {
         plays.init();
         now = null;
         next = null;
+        netWork = null;
         repaint();
     }
 
@@ -78,9 +85,8 @@ public class Tetris extends JPanel implements ActionListener {
         state.setStart();
         now = plays.get_Now();
         next = plays.get_Next();
-        Board.getInstance().update();
         timer.start();
-        repaint();
+        update();
     }
 
     public void stop() {
@@ -112,6 +118,10 @@ public class Tetris extends JPanel implements ActionListener {
     }
 
     public void update() {
+        Board.getInstance().update();
+        if (!plays.is_Acceptable()) {
+            over();
+        }
         repaint();
         gameSpeed = 700 - (score.getIntScore() / 10);
         timer.setDelay(gameSpeed);
@@ -130,11 +140,17 @@ public class Tetris extends JPanel implements ActionListener {
     }
 
     public void Save_request() {
-        if (JOptionPane.showConfirmDialog(main, "점수를 저장하시겠습니까?", "저장", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE) == 0) {
-            String name = JOptionPane.showInputDialog(main, "저장할 이름을 입력해주세요.", "이름 입력창", JOptionPane.INFORMATION_MESSAGE);
-            if (name != null) {
-                ScoreSave(name);
+        if (type == 2) {
+            if (JOptionPane.showConfirmDialog(main, "점수를 저장하시겠습니까?", "저장",
+                    JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE) == 0) {
+                String name = JOptionPane.showInputDialog(main, "저장할 이름을 입력해주세요.", "이름 입력창",
+                        JOptionPane.INFORMATION_MESSAGE);
+                if (name != null) {
+                    ScoreSave(name);
+                }
             }
+        } else {
+
         }
     }
 
@@ -233,6 +249,37 @@ public class Tetris extends JPanel implements ActionListener {
             plays.move_Down();
         }
     }
+
+    public void attack() {
+        for (int t : board[0]) {
+            if (t != 0) {
+                over();
+            }
+        }
+        plays.line_Create();
+        update();
+    }
+
+    public void setType(int type) {
+        this.type = type;
+        try {
+            this.netWork = new SocketServer(this);
+            this.netWork.start();
+        } catch (IOException e) {
+            netWorkLog.write(e.getMessage(), this.type);
+        }
+    }
+
+    public void setType(String ip, String port, int type) {
+        this.type = type;
+//        try {
+//                this.netWork = new SocketClient(,this);
+//                this.netWork.start();
+//        } catch (IOException e) {
+//            netWorkLog.write(e.getMessage(), this.type);
+//        }
+    }
+
 }
 
 
