@@ -12,7 +12,7 @@ public class GamePlays implements IGamePlays {
     private Tetromino now;
     private Tetromino next;
 
-    private int[][] board;
+    private volatile int[][] block;
 
     private Tetris tetris;
 
@@ -33,7 +33,7 @@ public class GamePlays implements IGamePlays {
     @Override
     public void init() {
         score = tetris.getScore();
-        board = tetris.getBoard();
+        block = tetris.getBlock();
         actions = tetris.getAction();
         now = TetrominosFactory.create();
         next = TetrominosFactory.create();
@@ -93,10 +93,14 @@ public class GamePlays implements IGamePlays {
             board_add();
             line_Delete();
             setNow();
+            tetris.update();
+            if (!is_Acceptable()) {
+                tetris.update();
+                tetris.over();
+            }
             setNext();
             tetris.setNow(now);
             tetris.setNext(next);
-            tetris.update();
         }
     }
 
@@ -129,8 +133,8 @@ public class GamePlays implements IGamePlays {
         int t_x = now.getX(), t_y = now.getY();
         for (int h = 0; h < t_height; h++) {
             for (int w = 0; w < t_widht; w++) {
-                if (now.getBlock()[h][w] > 0 && board[t_y + h][t_x + w] == 0) {
-                    board[t_y + h][t_x + w] = now.getType();
+                if (now.getBlock()[h][w] > 0 && block[t_y + h][t_x + w] == 0) {
+                    block[t_y + h][t_x + w] = now.getType();
                 }
             }
         }
@@ -150,7 +154,7 @@ public class GamePlays implements IGamePlays {
                     if (x < 0 || (x + j) > (9) || (y + i) > (19) || y < 0) {
                         return false;
                     }
-                    if (board[y + i][x + j] != 0) {
+                    if (this.block[y + i][x + j] != 0) {
                         return false;
                     }
                 }
@@ -162,44 +166,47 @@ public class GamePlays implements IGamePlays {
     @Override
     public void line_Delete() {
         int count = 0, score = 0;
-        for (int y = board.length - 1; y >= 0; y--) {
+        for (int y = block.length - 1; y >= 0; y--) {
             int x = 0, m;
             for (; x < 10; x++) {
-                if (board[y][x] != 0) {
+                if (block[y][x] != 0&&block[y][x] != 8) {
                     count++;
                 }
             }
-            if (count == board[y].length) {
+            if (count == block[y].length) {
                 score++;
-                for (x = 0; x < board[y].length; x++) {
+                for (x = 0; x < block[y].length; x++) {
                     for (m = y; m > 0; m--) {
-                        board[m][x] = board[m - 1][x];
+                        block[m][x] = block[m - 1][x];
                     }
-                    board[m][0] = 0;
+                    block[m][0] = 0;
                 }
                 y++;
             }
             count = 0;
         }
         if (score > 3) {
+            if (tetris.isMultiGame()) {
+                tetris.sendAttack();
+            }
             score *= 40;
-        } else {
+        } else if (score > 0) {
             score *= 15;
         }
         this.score.setScore(score);
     }
 
     @Override
-    public void line_Create() {
-        for (int y = 1; y < board.length - 1; y++) {
-            for (int x = 0; x < board[y].length - 1; x++) {
-                if (board[y][x] != 0) {
-                    board[y - 1][x - 1] = board[y][x];
+    public void line_Attack() {
+        for (int y = 1; y < block.length - 1; y++) {
+            for (int x = 0; x < block[y].length ; x++) {
+                if (block[y][x] != 0) {
+                    block[y - 1][x] = block[y][x];
                 }
             }
         }
-        for (int x = 0; x < board[19].length - 1; x++) {
-            board[19][x] = 8;
+        for (int x = 0; x < block[19].length - 1; x++) {
+            block[19][x] = 8;
         }
     }
 }

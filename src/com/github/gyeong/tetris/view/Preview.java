@@ -24,8 +24,8 @@ public class Preview extends JPanel {
         super.paint(g);
 
         if (next != null) {
-            int width = getWidth() / next.getWidth();
-            int height = getHeight() / next.getHeight();
+            int width = getWidth() / (next.getWidth()+2);
+            int height = getHeight() / (next.getHeight()+2);
             int t_widht = next.getWidth(), t_height = next.getHeight();
             int t_x = next.getX(), t_y = next.getY();
             for (int h = 0; h < t_height; h++) {
@@ -34,6 +34,11 @@ public class Preview extends JPanel {
                         Color temp = Colors.getColor(next.getType());
                         g.setColor(temp);
                         g.fillRect((w) * width, (h) * height, width, height);
+                        g.setColor(Color.BLACK);
+                        g.drawLine((w*width),(h*height),((w+1)*width),((h)*height));
+                        g.drawLine((w*width),(h*height),((w)*width),((h+1)*height));
+                        g.drawLine((w+1*width),(h*height),((w+1)*width),((h)*height));
+                        g.drawLine((w*width),(h+1*height),((w)*width),((h+1)*height));
                     }
                 }
             }

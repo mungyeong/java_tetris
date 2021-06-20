@@ -3,9 +3,7 @@ package com.github.gyeong.tetris.controller;
 import com.github.gyeong.tetris.controller.support.Colors;
 import com.github.gyeong.tetris.controller.support.FileSteam;
 import com.github.gyeong.tetris.model.*;
-import com.github.gyeong.tetris.model.network.NetWorkLog;
-import com.github.gyeong.tetris.model.network.SocketClient;
-import com.github.gyeong.tetris.model.network.SocketServer;
+import com.github.gyeong.tetris.model.network.*;
 import com.github.gyeong.tetris.view.Board;
 import com.github.gyeong.tetris.view.Main;
 import com.github.gyeong.tetris.view.ScoreBoard;
@@ -26,7 +24,7 @@ public class Tetris extends JPanel implements ActionListener {
     private final int BOARD_HEIGHT = 20;
     private int widht, height, gameSpeed;
 
-    private int type = 2; // 0:클라이언트 1:서버 2:싱글플레이
+    private boolean readyState = false; // 준비중 false 준비완료 true
 
     private IGamePlays plays = new GamePlays(this);
 
@@ -40,19 +38,26 @@ public class Tetris extends JPanel implements ActionListener {
 
     private Main main = Main.getInstance();
 
-    private Thread netWork;
+    private Board board;
 
-    private NetWorkLog netWorkLog;
+    private NetWork netWork;
+
+    private NetWorkLog netWorkLog = NetWorkLog.getInstance();
 
     private Tetromino now;
 
     private Tetromino next;
 
+    private Send send;
+
+    private Read read;
+
     Timer timer;
 
-    private int board[][] = new int[BOARD_HEIGHT][BOARD_WIDTH];
+    private volatile int block[][] = new int[BOARD_HEIGHT][BOARD_WIDTH];
 
-    public Tetris(int widht, int height) {
+    public Tetris(Board board, int widht, int height) {
+        this.board = board;
         this.widht = widht;
         this.height = height;
         setFocusable(true);
@@ -63,7 +68,7 @@ public class Tetris extends JPanel implements ActionListener {
     public void init() {
         for (int i = 0; i < BOARD_HEIGHT; i++) {
             for (int j = 0; j < BOARD_WIDTH; j++) {
-                board[i][j] = 0;
+                block[i][j] = 0;
             }
         }
         gameSpeed = 700;
@@ -76,24 +81,39 @@ public class Tetris extends JPanel implements ActionListener {
         now = null;
         next = null;
         netWork = null;
+        readyState = false;
         repaint();
     }
 
     public void start() {
-        plays.play();
-        playtime.start();
-        state.setStart();
-        now = plays.get_Now();
-        next = plays.get_Next();
-        timer.start();
-        update();
+        if (read != null || send != null) {
+            if (readyState) {
+                plays.play();
+                playtime.start();
+                state.setStart();
+                now = plays.get_Now();
+                next = plays.get_Next();
+                timer.start();
+                update();
+            } else {
+                send.setReady();
+                ready();
+            }
+        } else {
+            plays.play();
+            playtime.start();
+            state.setStart();
+            now = plays.get_Now();
+            next = plays.get_Next();
+            timer.start();
+            update();
+        }
     }
 
     public void stop() {
         timer.stop();
         state.setOver();
-        Board.getInstance().init();
-        init();
+        board.init();
     }
 
     public void over() {
@@ -101,8 +121,13 @@ public class Tetris extends JPanel implements ActionListener {
         timer.stop();
         state.setOver();
         Save_request();
-        init();
-        Board.getInstance().init();
+        board.init();
+        if (read != null || send != null) {
+            read.interrupt();
+            read = null;
+            send = null;
+        }
+        readyState = false;
     }
 
     public void resume() {
@@ -118,10 +143,7 @@ public class Tetris extends JPanel implements ActionListener {
     }
 
     public void update() {
-        Board.getInstance().update();
-        if (!plays.is_Acceptable()) {
-            over();
-        }
+        board.update();
         repaint();
         gameSpeed = 700 - (score.getIntScore() / 10);
         timer.setDelay(gameSpeed);
@@ -131,7 +153,6 @@ public class Tetris extends JPanel implements ActionListener {
         ScoreInfo scoreInfo = new ScoreInfo();
         scoreInfo.setPlayer_name(name);
         scoreInfo.setScore(score.getStringScore());
-
         long ms = this.playtime.getTime();
         scoreInfo.setPlay_time(String.valueOf(ms));
         FileSteam stream = FileSteam.getInstance();
@@ -139,8 +160,16 @@ public class Tetris extends JPanel implements ActionListener {
         ScoreBoard.getInstance().update();
     }
 
+    public ScoreInfo ScoreSave() {
+        ScoreInfo scoreInfo = new ScoreInfo();
+        scoreInfo.setScore(score.getStringScore());
+        long ms = this.playtime.getTime();
+        scoreInfo.setPlay_time(String.valueOf(ms));
+        return scoreInfo;
+    }
+
     public void Save_request() {
-        if (type == 2) {
+        if (read == null && send == null) {
             if (JOptionPane.showConfirmDialog(main, "점수를 저장하시겠습니까?", "저장",
                     JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE) == 0) {
                 String name = JOptionPane.showInputDialog(main, "저장할 이름을 입력해주세요.", "이름 입력창",
@@ -150,7 +179,8 @@ public class Tetris extends JPanel implements ActionListener {
                 }
             }
         } else {
-
+            ScoreInfo sendInfo = ScoreSave();
+            sendOver(sendInfo);
         }
     }
 
@@ -180,7 +210,7 @@ public class Tetris extends JPanel implements ActionListener {
     public void onBlock(Graphics g, int board_widht, int board_height) {
         for (int h = 0; h < BOARD_HEIGHT; h++) {
             for (int w = 0; w < BOARD_WIDTH; w++) {
-                Color temp = Colors.getColor(board[h][w]);
+                Color temp = Colors.getColor(block[h][w]);
                 g.setColor(temp);
                 g.fillRect(w * board_widht, h * board_height, (w + 1) * board_widht, (h + 1) * board_height);
             }
@@ -196,8 +226,95 @@ public class Tetris extends JPanel implements ActionListener {
 
     }
 
-    public int[][] getBoard() {
-        return board;
+    @Override
+    public void paint(Graphics g) {
+        super.paint(g);
+        int board_widht = widht / BOARD_WIDTH;
+        int board_height = height / BOARD_HEIGHT;
+
+        onBlock(g, board_widht, board_height);
+
+        if (now != null && this.state.getState() == 1) {
+            onNow(g, board_widht, board_height);
+        }
+        g.setColor(BLACK);
+        onBorder(g, board_widht, board_height);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (state.getState() == 1) {
+            plays.move_Down();
+        }
+    }
+
+    public void attack() {
+        plays.line_Attack();
+        for (int t : block[0]) {
+            if (t != 0) {
+                over();
+            }
+        }
+        update();
+    }
+
+    public void ready() {
+        if (!readyState) {
+            readyState = true;
+        } else {
+            sendStart();
+            start();
+        }
+    }
+
+    public void sendAttack() {
+        this.send.setAttack();
+    }
+
+    public void sendStart() {
+        this.send.setStart();
+    }
+
+    public void sendOver(ScoreInfo sendInfo) {
+        this.send.setOver(sendInfo);
+    }
+
+
+    public void setType() {
+        try {
+            this.netWork = new SocketServer(this);
+            this.netWork.start();
+        } catch (IOException e) {
+            netWorkLog.write(e.getMessage(), 1);
+        }
+    }
+
+    public void setType(String ip, String port) {
+        if (ip != null && port != null) {
+            this.netWork = new SocketClient(ip, Integer.valueOf(port), this);
+            this.netWork.start();
+        }
+    }
+
+    public boolean isMultiGame() {
+        return send != null && read != null;
+    }
+
+
+    public String[] getInfo() {
+        return netWork.getInfo();
+    }
+
+    public void setSend(Send send) {
+        this.send = send;
+    }
+
+    public void setRead(Read read) {
+        this.read = read;
+    }
+
+    public int[][] getBlock() {
+        return block;
     }
 
     public IGameState getState() {
@@ -227,59 +344,6 @@ public class Tetris extends JPanel implements ActionListener {
     public void setNow(Tetromino now) {
         this.now = now;
     }
-
-    @Override
-    public void paint(Graphics g) {
-        super.paint(g);
-        int board_widht = widht / BOARD_WIDTH;
-        int board_height = height / BOARD_HEIGHT;
-
-        onBlock(g, board_widht, board_height);
-
-        if (now != null && this.state.getState() == 1) {
-            onNow(g, board_widht, board_height);
-        }
-        g.setColor(BLACK);
-        onBorder(g, board_widht, board_height);
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        if (state.getState() == 1) {
-            plays.move_Down();
-        }
-    }
-
-    public void attack() {
-        for (int t : board[0]) {
-            if (t != 0) {
-                over();
-            }
-        }
-        plays.line_Create();
-        update();
-    }
-
-    public void setType(int type) {
-        this.type = type;
-        try {
-            this.netWork = new SocketServer(this);
-            this.netWork.start();
-        } catch (IOException e) {
-            netWorkLog.write(e.getMessage(), this.type);
-        }
-    }
-
-    public void setType(String ip, String port, int type) {
-        this.type = type;
-//        try {
-//                this.netWork = new SocketClient(,this);
-//                this.netWork.start();
-//        } catch (IOException e) {
-//            netWorkLog.write(e.getMessage(), this.type);
-//        }
-    }
-
 }
 
 

@@ -34,7 +34,6 @@ public class ScoreTable extends JTable {
         DefaultTableModel model = new TableModel();
         setModel(model);
         setup();
-
     }
 
     private void setup() {

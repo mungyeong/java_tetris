@@ -74,6 +74,9 @@ public class FileSteam {
 
     public synchronized void writeFile(String fileName, String contents) {
         try {
+            if(!this.folder.exists()){
+                this.folder.mkdir();
+            }
             File newfile = new File(this.folder + fileName);
             if (!newfile.exists()) {
                 newfile.createNewFile();
@@ -152,11 +155,11 @@ public class FileSteam {
 
     public synchronized void rankSort(int index) {
         int lastNumber = Collections.max(List.keySet());
-        do {
+        while (index < lastNumber) {
             ScoreInfo info = List.get(index + 1);
             List.put(index, info);
             index ++;
-        } while (index < lastNumber);
+        }
         List.remove(lastNumber);
     }
 

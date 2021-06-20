@@ -1,14 +1,16 @@
 package com.github.gyeong.tetris.model.network;
 
 import com.github.gyeong.tetris.controller.Tetris;
-import com.google.gson.*;
+import com.github.gyeong.tetris.view.Board;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
 import java.net.*;
 import java.util.Enumeration;
 import java.util.regex.Pattern;
 
-public class SocketServer extends Thread {
+public class SocketServer extends NetWork {
 
     private final int type = 1;
     private ServerSocket serverSocket = null;
@@ -19,16 +21,17 @@ public class SocketServer extends Thread {
     private NetWorkLog netWorkLog = NetWorkLog.getInstance();
     private Tetris tetris;
     private Gson gson = new GsonBuilder().create();
-    volatile Send send = null;
-    Read read = null;
+    private volatile Send send = null;
+    private volatile Read read = null;
+
+    private Board board = Board.getInstance();
 
     public SocketServer(Tetris tetris) throws IOException {
-        setIp();
+        setInfo();
         this.serverSocket = new ServerSocket();
         listenAddress = new InetSocketAddress(ip, port);
         this.serverSocket.bind(listenAddress);
         this.tetris = tetris;
-        System.out.println(getInfo());
     }
 
     @Override
@@ -37,13 +40,18 @@ public class SocketServer extends Thread {
             netWorkLog.write("서버 접속허용\n", type);
             serverSocket.setSoTimeout(60000);
             socket = serverSocket.accept();
+            board.updateBtn(true);
             socket.setTcpNoDelay(true);
             netWorkLog.write("서버 접속완료\n", type);
             send = new Send(socket, type);
-            read = new Read(socket, type,tetris);
+            read = new Read(socket, type, tetris);
             read.start();
+            tetris.setSend(send);
+            tetris.setRead(read);
         } catch (IOException e) {
-            netWorkLog.write(e.getMessage(), type);
+            netWorkLog.write(e.getMessage()+"\n", type);
+            board.showError(e.getMessage());
+            board.init();
         }
     }
 
@@ -51,12 +59,15 @@ public class SocketServer extends Thread {
         return type;
     }
 
-    private boolean ipCheck(String ip) {
+    public static boolean ipCheck(String ip) {
+        if(ip == null) {
+            return false;
+        }
         return (!"127.0.0.1".matches(ip)) &&
                 Pattern.matches("((\\d|[1-9]\\d|1\\d\\d|2[0-4]\\d|25[0-5])([.](?!$)|$)){4}", ip);
     }
 
-    private void setIp() throws SocketException {
+    private void setInfo() throws SocketException {
         Enumeration<NetworkInterface> n = NetworkInterface.getNetworkInterfaces();
         while (n.hasMoreElements()) {
             NetworkInterface e = n.nextElement();
@@ -70,11 +81,6 @@ public class SocketServer extends Thread {
             }
         }
     }
-
-    public Send getSend() {
-        return send;
-    }
-
     public String[] getInfo() {
         return new String[]{ip, String.valueOf(port)};
     }

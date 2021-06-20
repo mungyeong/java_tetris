@@ -34,6 +34,6 @@ public interface IGamePlays {
 
     public void play();
 
-    public void line_Create();
+    public void line_Attack();
 
 }

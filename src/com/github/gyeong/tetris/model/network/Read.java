@@ -1,6 +1,7 @@
 package com.github.gyeong.tetris.model.network;
 
 import com.github.gyeong.tetris.controller.Tetris;
+import com.github.gyeong.tetris.view.Board;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -15,6 +16,7 @@ public class Read extends Thread {
     private BufferedInputStream read = null;
     private Socket socket = null;
     private Tetris tetris;
+    private Board board = Board.getInstance();
 
     private int type;
 
@@ -24,27 +26,40 @@ public class Read extends Thread {
         this.tetris = tetris;
     }
 
-    public void run() {
+    public synchronized void run() {
         try {
             read = new BufferedInputStream(socket.getInputStream());
-
-            if (socket.isClosed()) {
-            }
             while (true) {
                 if (socket.isConnected() && read.available() > 0) {
                     StringBuffer buffer = new StringBuffer();
                     Gson gson = new GsonBuilder().create();
                     String contents = null;
-                    byte[] b = new byte[read.available()];
+                    byte[] b = new byte[1024];
                     int i = 0;
                     while ((i = read.read(b)) != -1) {
                         buffer.append(new String(b, 0, i));
                         contents = new String(b, StandardCharsets.UTF_8);
-                        netWorkLog.write("읽기\n", type);
-                        if (contents.equals("attack")) {
+                        if (contents.startsWith("attack")) {
                             tetris.attack();
+                            netWorkLog.write("공격당함\n", type);
                         }
-                        buffer.setLength(0);
+                        if (contents.startsWith("ready")) {
+                            tetris.ready();
+                            netWorkLog.write("준비완료\n", type);
+                        }
+                        if (contents.startsWith("start")) {
+                            tetris.start();
+                            netWorkLog.write("시작\n", type);
+                        }
+                        if (contents.startsWith("over")) {
+                            if(tetris.getState().getState() != 3){
+                                board.showScore(contents);
+                                tetris.over();
+                            }
+                            netWorkLog.write("오버\n", type);
+                        }
+                        buffer = new StringBuffer();
+                        b = new byte[1024];
                     }
                 }
             }
@@ -52,17 +67,13 @@ public class Read extends Thread {
             try {
                 read.close();
                 socket.close();
-            } catch (IOException ioException) {
-                netWorkLog.write(e.getMessage(), type);
-                netWorkLog.write(ioException.getMessage(), type);
+                netWorkLog.write(e.getMessage()+"\n", type);
                 netWorkLog.write("Read 입력스트림 닫힘\n", type);
+            } catch (IOException ioException) {
+                netWorkLog.write(ioException.getMessage()+"\n", type);
             }
 
         }
-    }
-
-    public void isCheck(String ip) {
-
     }
 }
 

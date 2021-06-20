@@ -50,9 +50,10 @@ public class ScoreBoard extends JPanel {
         table.reFresh();
     }
 
-    public synchronized void removeScore(int[] indexs) {
+    public void removeScore(int[] indexs) {
         FileSteam fileSteam = FileSteam.getInstance();
-        for (int index: indexs){
+        for (int i=indexs.length-1;i>=0;i--){
+            int index = indexs[i];
             fileSteam.remove(index);
         }
         table.reFresh();
