@@ -2,7 +2,7 @@ package com.github.gyeong.tetris.model;
 
 public class GameState implements IGameState {
 
-    private int state; // 0: 새 게임, 게임 오버  1: 게임 플레이  2:게임 중지
+    private int state; // 0,3: 새 게임, 게임 오버  1: 게임 플레이  2:게임 중지
 
     public int getState() {
         return state;

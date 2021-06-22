@@ -37,10 +37,8 @@ public class SocketClient extends NetWork {
     public void run() {
         try {
             netWorkLog.write("서버 접속완료\n", type);
+            board.updateBtn(true);
             client.setTcpNoDelay(true);
-            if(client.isConnected()){
-                board.updateBtn(true);
-            }
             send = new Send(client, type);
             read = new Read(client, type, tetris);
             read.start();
@@ -50,8 +48,7 @@ public class SocketClient extends NetWork {
             netWorkLog.write(e.getMessage()+"\n", type);
             board.showError(e.getMessage());
             board.init();
-            board.updateBtn(true);
-            board.Btn_init();
+
         }
     }
 

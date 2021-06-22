@@ -1,5 +1,6 @@
 package com.github.gyeong.tetris.controller.support;
 
+import com.github.gyeong.tetris.model.IScoreInfo;
 import com.github.gyeong.tetris.model.ScoreInfo;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -21,7 +22,7 @@ public class FileSteam {
     private BufferedOutputStream write;
     private BufferedInputStream read;
 
-    private static Map<Integer, ScoreInfo> List = getInstance().readFile();
+    private static Map<Integer, IScoreInfo> List = getInstance().readFile();
 
     private Gson gson = new GsonBuilder().create();
 
@@ -97,7 +98,7 @@ public class FileSteam {
     }
 
 
-    public synchronized Map<Integer, ScoreInfo> readFile() {
+    public synchronized Map<Integer, IScoreInfo> readFile() {
         String contents = null;
         try {
             fileInputStream = new FileInputStream(fileName);
@@ -131,36 +132,38 @@ public class FileSteam {
     }
 
 
-    public synchronized void saveScore(ScoreInfo info) {
-        rankSort(info);
+    public synchronized void saveScore(IScoreInfo scoreInfo) {
+        rankSort(scoreInfo);
         writeFile();
         List = getInstance().readFile();
     }
 
-    public synchronized void rankSort(ScoreInfo info) {
+    public synchronized void rankSort(IScoreInfo scoreInfo) {
         int i = 0;
         for (; i < List.size(); i++) {
-            ScoreInfo b = List.get(i);
+            IScoreInfo b = List.get(i);
             int score = b.getScoreint();
-            if (info.getScoreint() >= score) {
+            if (scoreInfo.getScoreint() >= score) {
                 for (int j = List.size() - 1; j >= i; j--) {
-                    ScoreInfo s = List.get(j);
+                    IScoreInfo s = List.get(j);
                     List.put(j + 1, s);
                 }
                 break;
             }
         }
-        List.put(i, info);
+        List.put(i, scoreInfo);
     }
 
     public synchronized void rankSort(int index) {
         int lastNumber = Collections.max(List.keySet());
+        if(lastNumber <= index){return;}
         while (index < lastNumber) {
-            ScoreInfo info = List.get(index + 1);
-            List.put(index, info);
+            IScoreInfo scoreInfo = List.get(index + 1);
+            List.put(index, scoreInfo);
             index ++;
         }
         List.remove(lastNumber);
+
     }
 
     public synchronized void remove(int i) {
@@ -171,7 +174,7 @@ public class FileSteam {
         writeFile();
     }
 
-    public synchronized Map<Integer, ScoreInfo> getList() {
+    public synchronized Map<Integer, IScoreInfo> getList() {
         return List;
     }
 }

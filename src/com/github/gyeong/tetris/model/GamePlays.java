@@ -169,7 +169,7 @@ public class GamePlays implements IGamePlays {
         for (int y = block.length - 1; y >= 0; y--) {
             int x = 0, m;
             for (; x < 10; x++) {
-                if (block[y][x] != 0&&block[y][x] != 8) {
+                if (block[y][x] != 0 && block[y][x] != 8) {
                     count++;
                 }
             }
@@ -186,9 +186,7 @@ public class GamePlays implements IGamePlays {
             count = 0;
         }
         if (score > 3) {
-            if (tetris.isMultiGame()) {
-                tetris.sendAttack();
-            }
+            tetris.sendAttack();
             score *= 40;
         } else if (score > 0) {
             score *= 15;
@@ -198,14 +196,14 @@ public class GamePlays implements IGamePlays {
 
     @Override
     public void line_Attack() {
-        for (int y = 1; y < block.length - 1; y++) {
-            for (int x = 0; x < block[y].length ; x++) {
+        for (int y = 1; y < block.length; y++) {
+            for (int x = 0; x < block[y].length; x++) {
                 if (block[y][x] != 0) {
                     block[y - 1][x] = block[y][x];
                 }
             }
         }
-        for (int x = 0; x < block[19].length - 1; x++) {
+        for (int x = 0; x < block[19].length; x++) {
             block[19][x] = 8;
         }
     }

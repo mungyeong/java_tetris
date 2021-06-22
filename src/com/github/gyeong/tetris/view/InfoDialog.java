@@ -1,5 +1,7 @@
 package com.github.gyeong.tetris.view;
 
+import com.github.gyeong.tetris.model.network.SocketServer;
+
 import javax.swing.*;
 
 public class InfoDialog extends JDialog {
@@ -13,40 +15,51 @@ public class InfoDialog extends JDialog {
     private JTextPane header = new JTextPane();
     private String ip = null;
     private String port = null;
+    private boolean state = false;
 
     public InfoDialog(Main main, String title) {
-        super(main, title,true);
+        super(main, title, true);
         setLayout(null);
         INPUT.addActionListener(e -> {
-            setInfo(field_IP.getText(),field_Port.getText());
+            setInfo(field_IP.getText(), field_Port.getText());
+            setVisible(false);
+            if (ip.equals("") && port.equals("") && !SocketServer.ipCheck(ip)) {
+                JOptionPane.showMessageDialog(main, "재입력 부탁드립니다.", "잘못된 정보 입력", JOptionPane.WARNING_MESSAGE);
+                setVisible(true);
+            } else {
+                state = true;
+            }
         });
         CANCEL.addActionListener(e -> {
-            main.getBd().init();
             setVisible(false);
+            dispose();
         });
-
+        addNotify();
         setLocationRelativeTo(Main.getInstance());
         setSize(300, 200);
 
-        add(field_IP).setBounds(100,0,200,50);
-        add(field_Port).setBounds(100,50,200,50);
-        add(label_IP).setBounds(50,0,50,50);
-        add(label_Port).setBounds(50,50,50,50);
-        add(INPUT).setBounds(250,100,50,50);
-        add(CANCEL).setBounds(200,100,50,50);
+        add(field_IP).setBounds(100, 0, 200, 50);
+        add(field_Port).setBounds(100, 50, 200, 50);
+        add(label_IP).setBounds(50, 0, 50, 50);
+        add(label_Port).setBounds(50, 50, 50, 50);
+        add(INPUT).setBounds(250, 100, 50, 50);
+        add(CANCEL).setBounds(200, 100, 50, 50);
         setVisible(true);
+        setResizable(false);
     }
 
     public void setInfo(String ip, String port) {
         this.ip = ip;
         this.port = port;
     }
+
     public String[] getInfo() {
-        if(ip!=null&&port!=(null)){
+        if (ip != null && port != (null)) {
             return new String[]{ip, port};
         }
-        return new String[2];
+        return null;
     }
+
     public void init() {
         ip = null;
         port = null;

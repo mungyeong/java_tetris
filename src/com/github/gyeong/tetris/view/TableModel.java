@@ -1,5 +1,6 @@
 package com.github.gyeong.tetris.view;
 
+import com.github.gyeong.tetris.model.IScoreInfo;
 import com.github.gyeong.tetris.model.ScoreInfo;
 import com.github.gyeong.tetris.controller.support.FileSteam;
 
@@ -9,7 +10,7 @@ import java.util.Map;
 public class TableModel extends DefaultTableModel {
 
     public TableModel() {
-        Map<Integer, ScoreInfo> List = FileSteam.getInstance().getList();
+        Map<Integer, IScoreInfo> List = FileSteam.getInstance().getList();
         String[][] data = new String[List.size()][List.keySet().size()];
         for (int i : List.keySet()) {
             data[i] = List.get(i).getString(i);

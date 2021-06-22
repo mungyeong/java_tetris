@@ -1,6 +1,6 @@
 package com.github.gyeong.tetris.model.network;
 
-import com.github.gyeong.tetris.model.ScoreInfo;
+import com.github.gyeong.tetris.model.IScoreInfo;
 import com.github.gyeong.tetris.view.Board;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -40,10 +40,15 @@ public class Send {
         Send();
     }
 
-    public void setOver(ScoreInfo sendInfo) {
+    public void setOver(IScoreInfo scoreInfo) {
         contents = "over\n";
+        Send();
+        setInfo(scoreInfo);
+    }
+
+    public void setInfo(IScoreInfo scoreInfo) {
         Gson gson = new GsonBuilder().create();
-        contents += gson.toJson(sendInfo);
+        contents = gson.toJson(scoreInfo);
         Send();
     }
 
@@ -53,7 +58,7 @@ public class Send {
             if (socket.isConnected()) {
                 send.write(contents.getBytes(StandardCharsets.UTF_8));
                 send.flush();
-                netWorkLog.write(contents + "쓰기\n", type);
+                netWorkLog.write(contents + "\t쓰기\n", type);
             }
             contents = null;
         } catch (IOException e) {

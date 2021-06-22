@@ -40,14 +40,14 @@ public class SocketServer extends NetWork {
             netWorkLog.write("서버 접속허용\n", type);
             serverSocket.setSoTimeout(60000);
             socket = serverSocket.accept();
-            board.updateBtn(true);
             socket.setTcpNoDelay(true);
             netWorkLog.write("서버 접속완료\n", type);
+            board.updateBtn(true);
             send = new Send(socket, type);
             read = new Read(socket, type, tetris);
             read.start();
-            tetris.setSend(send);
             tetris.setRead(read);
+            tetris.setSend(send);
         } catch (IOException e) {
             netWorkLog.write(e.getMessage()+"\n", type);
             board.showError(e.getMessage());
