@@ -1,17 +1,22 @@
 package com.github.gyeong.tetris.model;
 
 import com.github.gyeong.tetris.controller.Tetris;
+import com.github.gyeong.tetris.controller.support.Event;
+import com.github.gyeong.tetris.view.Board;
 
 import java.awt.event.KeyEvent;
 
 public class GameActions implements IGameActions {
 
-    public GameActions(Tetris tetris) {
+    public GameActions(Tetris tetris,Board board) {
         this.tetris = tetris;
+        this.board = board;
     }
+
     private IGamePlays play = null;
 
     private IGameState state = null;
+    private Board board = null;
 
     private Tetris tetris;
 
@@ -33,21 +38,31 @@ public class GameActions implements IGameActions {
                 case KeyEvent.VK_SPACE:
                     play.move_Bottom();
                     break;
-                case 'h':
-                case 'H':
-                case 'p':
-                case 'P':
+                case KeyEvent.VK_ESCAPE:
                     tetris.pause();
                     break;
             }
-        } else if (this.state.getState() == 0) {
+        } else if (this.state.getState() == 0||this.state.getState() == 3) {
             switch (keycode) {
-                case 0:
+                case KeyEvent.VK_SPACE:
+                    tetris.start();
+                    break;
+                case KeyEvent.VK_ESCAPE:
+                    tetris.stop();
+                    board.init();
+                    Event.change(2);
                     break;
             }
         } else if (this.state.getState() == 2) {
             switch (keycode) {
                 case KeyEvent.VK_SPACE:
+                    tetris.resume();
+                    break;
+                case KeyEvent.VK_ESCAPE:
+                    tetris.stop();
+                    board.init();
+                    Event.change(2);
+                    break;
             }
         }
     }

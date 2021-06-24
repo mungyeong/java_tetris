@@ -45,11 +45,7 @@ public class MultiPlays extends Tetris implements ActionListener {
             read.interrupt();
         }
         plays.init();
-        if (read != null) {
-            read.interrupt();
-        }
         read = null;
-        send = null;
         playtime.init();
         score.init();
         super.init();
@@ -58,6 +54,7 @@ public class MultiPlays extends Tetris implements ActionListener {
     public void start() {
         super.start();
         playtime.start();
+        board.updateBtn(false);
     }
 
     public void stop() {
@@ -65,14 +62,13 @@ public class MultiPlays extends Tetris implements ActionListener {
     }
 
     public void over() {
-        save_Request();
-        if (read != null) {
-            read.interrupt();
+        if(!overState){
+            overState = true;
+            send.setOver();
         }
-        read = null;
+        super.over();
         send = null;
         readyState = false;
-        super.over();
         board.setTetris(false);
     }
 
@@ -85,17 +81,18 @@ public class MultiPlays extends Tetris implements ActionListener {
     }
 
     public void save_Request() {
-        IScoreInfo scoreInfo = ScoreSave();
-        if (!overState) {
-            overState = true;
-            sendOver(scoreInfo);
-        } else {
-            sendInfo(scoreInfo);
+        if(overState){
+            sendInfo(ScoreSave());
         }
     }
 
-    public void sendOver(IScoreInfo scoreInfo) {
-        send.setOver(scoreInfo);
+    public void setOver() {
+        overState = true;
+        over();
+    }
+
+    public void sendInfo(IScoreInfo scoreInfo) {
+        send.setInfo(scoreInfo);
     }
 
     public IScoreInfo ScoreSave() {
@@ -125,27 +122,23 @@ public class MultiPlays extends Tetris implements ActionListener {
     }
 
     public void sendAttack() {
-        this.send.setAttack();
+        send.setAttack();
     }
 
     public void sendState() {
         if (readyState) {
             start();
-            this.send.setStart();
+            send.setStart();
         } else {
             readyState = true;
-            this.send.setReady();
+            send.setReady();
         }
-    }
-
-    public void sendInfo(IScoreInfo scoreInfo) {
-        send.setInfo(scoreInfo);
     }
 
     public void setType() {
         try {
-            this.netWork = new SocketServer(this);
-            this.netWork.start();
+            netWork = new SocketServer(this);
+            netWork.start();
         } catch (IOException e) {
             netWorkLog.write(e.getMessage(), 1);
         }
@@ -153,8 +146,8 @@ public class MultiPlays extends Tetris implements ActionListener {
 
     public void setType(String ip, String port) {
         if (ip != null && port != null) {
-            this.netWork = new SocketClient(ip, Integer.valueOf(port), this);
-            this.netWork.start();
+            netWork = new SocketClient(ip, Integer.valueOf(port), this);
+            netWork.start();
         }
     }
 
@@ -167,6 +160,9 @@ public class MultiPlays extends Tetris implements ActionListener {
     }
 
     public void setRead(Read read) {
+        if (read == null) {
+            read.interrupt();
+        }
         this.read = read;
     }
 }

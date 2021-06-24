@@ -1,7 +1,8 @@
 package com.github.gyeong.tetris.controller;
 
 import com.github.gyeong.tetris.model.*;
-import com.github.gyeong.tetris.model.network.*;
+import com.github.gyeong.tetris.model.network.Read;
+import com.github.gyeong.tetris.model.network.Send;
 import com.github.gyeong.tetris.view.Board;
 import com.github.gyeong.tetris.view.Main;
 
@@ -17,18 +18,22 @@ public class SinglePlays extends Tetris {
 
     private Main main = Main.getInstance();
 
-
-    private IGameActions actions = new GameActions(this);
+    private IGameActions actions;
 
     private IGameScore score = new GameScore();
 
     private IPlayTime playtime = new PlayTime();
 
+    private Board board;
+
     private Tetromino now;
 
     private Tetromino next;
+
     public SinglePlays(Board board, int widht, int height) {
         super(board, widht, height);
+        this.board = board;
+        this.actions = new GameActions(this, board);
     }
 
     @Override
@@ -37,10 +42,11 @@ public class SinglePlays extends Tetris {
                 JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE) == 0) {
             String name = JOptionPane.showInputDialog(main, "저장할 이름을 입력해주세요.", "이름 입력창",
                     JOptionPane.INFORMATION_MESSAGE);
-            if (!name.equals("")) {
+            if (name != null && !name.equals("")) {
                 ScoreSave(name);
             }
         }
+        board.init();
     }
 
     @Override
@@ -74,11 +80,17 @@ public class SinglePlays extends Tetris {
     }
 
     @Override
-    public String[] getInfo(){
+    public String[] getInfo() {
         return null;
-    };
+    }
+
     @Override
     public void setSend(Send send) {
+
+    }
+
+    @Override
+    public void setOver() {
 
     }
 

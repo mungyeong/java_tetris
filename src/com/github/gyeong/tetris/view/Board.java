@@ -60,6 +60,20 @@ public class Board extends JPanel {
         init();
     }
 
+    public void init() {
+        event_Set();
+        score.init();
+        preview.init();
+        tetris.init();
+        btn[1].setText("시작");
+        if(type != 2){
+            Btn_Change();
+        } else {
+            updateBtn(true);
+        }
+        repaint();
+    }
+
     public void event_Set() {
         for (int i = 0; i < btn.length; i++) {
             int index = i, x = 0, y = 0, w = 0, h = 50;
@@ -118,7 +132,7 @@ public class Board extends JPanel {
             Btn_Change();
         }
         if (index == 2) {
-            if (JOptionPane.showConfirmDialog(main, "재도전하시겠습니까?", "재도전",
+            if (JOptionPane.showConfirmDialog(null, "재도전하시겠습니까?", "재도전",
                     JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == 0) {
                 type = 2;
                 init();
@@ -130,7 +144,7 @@ public class Board extends JPanel {
                 Btn_Change();
             }
             Object[] options = {"Client", "Server"};
-            type = JOptionPane.showOptionDialog(main, "서버 or 클라이언트?", "멀티플레이 선택",
+            type = JOptionPane.showOptionDialog(null, "서버 or 클라이언트?", "멀티플레이 선택",
                     JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, -1);
             System.out.println(this.type);
             updateBtn(false);
@@ -138,36 +152,25 @@ public class Board extends JPanel {
                 setTetris(true);
                 init();
                 setClient();
-                Btn_Change();
             }
             if (type == 1) {
                 setTetris(true);
                 init();
                 setServer();
-                Btn_Change();
             }
             if (type == -1) {
-                type = 2;
-                updateBtn(true);
+                setType();
                 if (tetris.getState().getState() == 2) {
                     tetris.resume();
                     Btn_Change();
+                } else {
+                    btn[1].setText("시작");
                 }
+                updateBtn(true);
             }
         }
         tetris.requestFocus();
         btn[index].setEnabled(true);
-    }
-
-    public void init() {
-        event_Set();
-        score.init();
-        preview.init();
-        tetris.init();
-        if(type != 2){
-            updateBtn(true);
-            btn[1].setText("시작");
-        }
     }
 
     public void Btn_Change() {
@@ -189,11 +192,24 @@ public class Board extends JPanel {
     }
 
     public void showError(String errormsg) {
-        JOptionPane.showMessageDialog(main, errormsg, "에러", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(null, errormsg, "에러", JOptionPane.ERROR_MESSAGE);
     }
 
-    public void showScore(String msg) {
-        JOptionPane.showMessageDialog(main, msg, "점수", JOptionPane.INFORMATION_MESSAGE);
+    public void showScore(Integer opponent) {
+        Integer score = tetris.getScore().getIntScore();
+        String msg = "상대방 점수는 " + opponent + "입니다.";
+        String title = null;
+        if(score > opponent){
+            title = "게임 승리";
+        }
+        if(score < opponent){
+            title = "게임 패배";
+        }
+        if(score == opponent){
+            title = "게임 비김";
+        }
+        JOptionPane.showMessageDialog(null, msg, title, JOptionPane.INFORMATION_MESSAGE);
+        tetris.setRead(null);
     }
 
     public void update() {
@@ -207,18 +223,25 @@ public class Board extends JPanel {
 
     public void setClient() {
         String info[] = null;
-        InfoDialog popup = new InfoDialog(main, "서버 접속정보 입력창");
+        InfoDialog popup = new InfoDialog(null, "서버 접속정보 입력창");
         info = popup.getInfo();
-        if (!(info[0].equals("") && info[1].equals(""))) {
+        if (info != null&&!(info[0].equals("") && info[1].equals(""))) {
             tetris.setType(info[0], info[1]);
+            Btn_Change();
+        } else {
+            setType();
+            setTetris(false);
+            btn[1].setText("시작");
+            updateBtn(true);
         }
     }
 
     public void setServer() {
         tetris.setType();
         String[] info = tetris.getInfo();
-        JOptionPane.showMessageDialog(main, "IP: " + info[0] + "\nPORT: " + info[1] + "\n60초 동안 접속 가능\n 접속시 버튼 활성화",
+        JOptionPane.showMessageDialog(null, "IP: " + info[0] + "\nPORT: " + info[1] + "\n60초 동안 접속 가능\n 접속시 버튼 활성화",
                 "서버 접속정보", JOptionPane.INFORMATION_MESSAGE);
+        Btn_Change();
     }
 
     public void setTetris(boolean mode) {
@@ -231,8 +254,11 @@ public class Board extends JPanel {
             this.tetris = single;
         }
         add(this.tetris);
-
+        init();
         repaint();
-        tetris.init();
+    }
+
+    public void setType() {
+        type = 2;
     }
 }

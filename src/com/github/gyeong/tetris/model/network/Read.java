@@ -1,13 +1,17 @@
 package com.github.gyeong.tetris.model.network;
 
 import com.github.gyeong.tetris.controller.Tetris;
+import com.github.gyeong.tetris.model.IScoreInfo;
+import com.github.gyeong.tetris.model.ScoreInfo;
 import com.github.gyeong.tetris.view.Board;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.LinkedHashMap;
 
 public class Read extends Thread {
     private NetWorkLog netWorkLog = NetWorkLog.getInstance();
@@ -53,11 +57,15 @@ public class Read extends Thread {
                         }
                         if (contents.startsWith("over")) {
                             if (tetris.getState().getState() != 3) {
-                                tetris.save_Request();
+                                tetris.setOver();
                                 netWorkLog.write("오버\n", type);
                             }
                         }
-
+                        if(contents.startsWith("Info")) {
+                            Integer opponent = gson.fromJson(contents.replace("Info\n",""), ScoreInfo.class).getScoreint();
+                            board.showScore(opponent);
+                            netWorkLog.write("정보 읽기\n", type);
+                        }
                     }
                 }
             }

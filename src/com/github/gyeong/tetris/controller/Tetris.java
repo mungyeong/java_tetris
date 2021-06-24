@@ -28,7 +28,7 @@ public abstract class Tetris extends JPanel implements ActionListener{
 
     private IGameState state = new GameState();
 
-    private IGameActions actions = new GameActions(this);
+    private IGameActions actions;
 
     private IGameScore score = new GameScore();
 
@@ -50,6 +50,7 @@ public abstract class Tetris extends JPanel implements ActionListener{
         this.board = board;
         this.widht = widht;
         this.height = height;
+        this.actions = new GameActions(this,board);
         setFocusable(true);
         setBounds(0, 0, widht, height);
         addKeyListener(new TetrisKeyAdapter());
@@ -92,8 +93,9 @@ public abstract class Tetris extends JPanel implements ActionListener{
     public void over() {
         playtime.stop();
         timer.stop();
-        state.setOver();
         save_Request();
+        state.setOver();
+        board.setType();
         board.init();
     }
 
@@ -223,6 +225,8 @@ public abstract class Tetris extends JPanel implements ActionListener{
     public abstract void setReadyState();
 
     public abstract void sendState();
+
+    public abstract void setOver();
 
     public abstract void sendAttack();
 

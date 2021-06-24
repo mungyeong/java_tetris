@@ -51,6 +51,9 @@ public class SocketServer extends NetWork {
         } catch (IOException e) {
             netWorkLog.write(e.getMessage()+"\n", type);
             board.showError(e.getMessage());
+            board.setType();
+            board.setTetris(false);
+            board.updateBtn(true);
             board.init();
         }
     }

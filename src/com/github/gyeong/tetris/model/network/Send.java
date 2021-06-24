@@ -40,15 +40,14 @@ public class Send {
         Send();
     }
 
-    public void setOver(IScoreInfo scoreInfo) {
-        contents = "over\n";
+    public void setOver() {
+        contents = "over";
         Send();
-        setInfo(scoreInfo);
     }
 
     public void setInfo(IScoreInfo scoreInfo) {
         Gson gson = new GsonBuilder().create();
-        contents = gson.toJson(scoreInfo);
+        contents = "Info\n" + gson.toJson(scoreInfo);
         Send();
     }
 

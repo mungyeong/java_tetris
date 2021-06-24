@@ -29,6 +29,7 @@ public class SocketClient extends NetWork {
             this.client = new Socket(ip, port);
         } catch (IOException e) {
             board.showError(e.getMessage());
+            board.setTetris(false);
             netWorkLog.write(e.getMessage(), type);
         }
     }
@@ -47,8 +48,9 @@ public class SocketClient extends NetWork {
         } catch (IOException e) {
             netWorkLog.write(e.getMessage()+"\n", type);
             board.showError(e.getMessage());
+            board.setType();
+            board.setTetris(false);
             board.init();
-
         }
     }
 
