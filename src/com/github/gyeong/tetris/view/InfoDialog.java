@@ -36,7 +36,7 @@ public class InfoDialog extends JDialog {
         });
         addNotify();
         setLocationRelativeTo(Main.getInstance());
-        setSize(300, 200);
+        setSize(400, 200);
 
         add(field_IP).setBounds(100, 0, 200, 50);
         add(field_Port).setBounds(100, 50, 200, 50);
