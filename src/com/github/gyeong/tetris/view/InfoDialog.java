@@ -38,12 +38,12 @@ public class InfoDialog extends JDialog {
         setLocationRelativeTo(Main.getInstance());
         setSize(400, 200);
 
-        add(field_IP).setBounds(100, 0, 200, 50);
-        add(field_Port).setBounds(100, 50, 200, 50);
+        add(field_IP).setBounds(100, 0, 250, 50);
+        add(field_Port).setBounds(100, 50, 250, 50);
         add(label_IP).setBounds(50, 0, 50, 50);
         add(label_Port).setBounds(50, 50, 50, 50);
-        add(INPUT).setBounds(250, 100, 50, 50);
-        add(CANCEL).setBounds(200, 100, 50, 50);
+        add(INPUT).setBounds(270, 100, 70, 50);
+        add(CANCEL).setBounds(200, 100, 70, 50);
         setVisible(true);
         setResizable(false);
     }
