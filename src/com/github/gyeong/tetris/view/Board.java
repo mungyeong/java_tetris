@@ -84,19 +84,19 @@ public class Board extends JPanel {
                 event(index);
             });
             if (i == 0) {
-                x = 550;
+                x = 500;
                 y = 0;
-                w = 50;
+                w = 70;
             } else if (i == 1) {
                 x = 450;
                 y = 600;
                 w = 100;
             } else if (i == 2) {
-                x = 550;
+                x = 500;
                 y = 700;
-                w = 50;
+                w = 100;
             } else if (i == 3) {
-                x = 450;
+                x = 400;
                 y = 700;
                 w = 100;
             }
@@ -227,7 +227,6 @@ public class Board extends JPanel {
         info = popup.getInfo();
         if (info != null&&!(info[0].equals("") && info[1].equals(""))) {
             tetris.setType(info[0], info[1]);
-            Btn_Change();
         } else {
             setType();
             setTetris(false);
@@ -241,7 +240,6 @@ public class Board extends JPanel {
         String[] info = tetris.getInfo();
         JOptionPane.showMessageDialog(null, "IP: " + info[0] + "\nPORT: " + info[1] + "\n60초 동안 접속 가능\n 접속시 버튼 활성화",
                 "서버 접속정보", JOptionPane.INFORMATION_MESSAGE);
-        Btn_Change();
     }
 
     public void setTetris(boolean mode) {

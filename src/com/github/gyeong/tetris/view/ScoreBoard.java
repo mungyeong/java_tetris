@@ -33,8 +33,8 @@ public class ScoreBoard extends JPanel {
         jScrollPane.setBounds(50, 100, 500, 600);
         setBackground(new Color(56, 61, 63));
         add(jScrollPane);
-        add(btn_menu).setBounds(550, 0, 50, 50);
-        add(btn_delete).setBounds(550, 700, 50, 50);
+        add(btn_menu).setBounds(500, 0, 70, 50);
+        add(btn_delete).setBounds(500, 700, 70, 50);
         btn_menu.addActionListener(e -> {
             Event.change(2);
         });
