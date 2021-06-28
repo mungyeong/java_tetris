@@ -1,5 +1,11 @@
 #자바 테트리스  
 
+## 7월 중순에 JavaFX로 교체 및 리팩토링 책 보며 클린 코드 도전
+<img src = "https://github.com/mungyeong/java_tetris/blob/master/images/Refactoring.jpg?raw=true" width="40%" />
+
+
+https://www.aladin.co.kr/shop/wproduct.aspx?ItemId=236186172
+
 ###기능
 테트리스 도형 이동 방향키 (← ,→)<br>
 테트리스 도형 한칸 다운 방향키 (↓)<br>
