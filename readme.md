@@ -22,6 +22,11 @@
 #### 공격 기준
 4줄 이상
 
+####라이브러리
+JDK: 1.8.0_261
+GSON: 2.8.7.jar
+
+
 ### 7월 중순에 JavaFX로 교체 및 리팩토링 책 보며 클린 코드 도전
 <img src = "https://github.com/mungyeong/java_tetris/blob/master/images/Refactoring.jpg?raw=true" width="40%" />
 
