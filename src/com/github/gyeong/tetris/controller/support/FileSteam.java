@@ -108,7 +108,7 @@ public class FileSteam {
             if (read.available() > 0) {
                 byte[] b = new byte[read.available()];
                 while ((i = read.read(b)) != -1) {
-                    buffer.append(new String(b, 0, i));
+                    buffer.append(new String(b, 0, i, StandardCharsets.UTF_8));
                 }
                 contents = buffer.toString();
             }
