@@ -13,10 +13,11 @@ public class GameActions implements IGameActions {
         this.board = board;
     }
 
+    private Board board = null;
+
     private IGamePlays play = null;
 
     private IGameState state = null;
-    private Board board = null;
 
     private Tetris tetris;
 
@@ -40,12 +41,14 @@ public class GameActions implements IGameActions {
                     break;
                 case KeyEvent.VK_ESCAPE:
                     tetris.pause();
+                    board.Btn_Change();
                     break;
             }
         } else if (this.state.getState() == 0||this.state.getState() == 3) {
             switch (keycode) {
                 case KeyEvent.VK_SPACE:
                     tetris.start();
+                    board.Btn_Change();
                     break;
                 case KeyEvent.VK_ESCAPE:
                     tetris.stop();
@@ -57,6 +60,7 @@ public class GameActions implements IGameActions {
             switch (keycode) {
                 case KeyEvent.VK_SPACE:
                     tetris.resume();
+                    board.Btn_Change();
                     break;
                 case KeyEvent.VK_ESCAPE:
                     tetris.stop();

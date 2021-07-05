@@ -47,17 +47,14 @@ public class Board extends JPanel {
 
     private Board() {
         score = Score.getInstance();
-        single = new SinglePlays(this, 400, 800);
-        tetris = single;
         preview = new Preview(tetris);
         add(score);
-        add(tetris);
         add(preview);
         setBounds(0, 0, 600, 800);
         setLayout(null);
         setBackground(Color.BLACK);
         setVisible(true);
-        init();
+        setTetris(false);
     }
 
     public void init() {
@@ -66,7 +63,7 @@ public class Board extends JPanel {
         preview.init();
         tetris.init();
         btn[1].setText("시작");
-        if(type != 2){
+        if (type != 2) {
             Btn_Change();
         } else {
             updateBtn(true);
@@ -199,13 +196,13 @@ public class Board extends JPanel {
         Integer score = tetris.getScore().getIntScore();
         String msg = "상대방 점수는 " + opponent + "입니다.";
         String title = null;
-        if(score > opponent){
+        if (score > opponent) {
             title = "게임 승리";
         }
-        if(score < opponent){
+        if (score < opponent) {
             title = "게임 패배";
         }
-        if(score == opponent){
+        if (score == opponent) {
             title = "게임 비김";
         }
         JOptionPane.showMessageDialog(null, msg, title, JOptionPane.INFORMATION_MESSAGE);
@@ -225,7 +222,7 @@ public class Board extends JPanel {
         String info[] = null;
         InfoDialog popup = new InfoDialog(null, "서버 접속정보 입력창");
         info = popup.getInfo();
-        if (info != null&&!(info[0].equals("") && info[1].equals(""))) {
+        if (info != null && !(info[0].equals("") && info[1].equals(""))) {
             tetris.setType(info[0], info[1]);
         } else {
             setType();
@@ -243,7 +240,9 @@ public class Board extends JPanel {
     }
 
     public void setTetris(boolean mode) {
-        remove(this.tetris);
+        if (this.tetris != null) {
+            remove(this.tetris);
+        }
         if (mode) {
             multi = new MultiPlays(this, 400, 800);
             this.tetris = multi;
